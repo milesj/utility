@@ -166,12 +166,6 @@ class EnumerableBehavior extends ModelBehavior {
 		if (!empty($results)) {
 			$enum = $this->_enum;
 			$alias = $model->alias;
-			$isMulti = true;
-
-			if (!isset($results[0])) {
-				$results = array($results);
-				$isMulti = false;
-			}
 
 			foreach ($results as &$result) {
 				foreach ($enum as $key => $values) {
@@ -186,10 +180,6 @@ class EnumerableBehavior extends ModelBehavior {
 						$result[$alias][$key] = $this->enum($model, $key, $value);
 					}
 				}
-			}
-
-			if (!$isMulti) {
-				$results = $results[0];
 			}
 		}
 

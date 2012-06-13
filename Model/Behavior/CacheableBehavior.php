@@ -6,7 +6,7 @@
  * When Model::find() is called and the cache parameter is passed, the data will be written.
  * When Model::create() or Model::update() is called, the cache key with the associated Model::$id will be written.
  * When Model::delete() is called, the cache key with the associated Model::$id will be deleted.
- * All supports the ability to batch reset/delete cached items by providing a mapping of method and argument hooks.
+ * Also supports the ability to batch reset/delete cached items by providing a mapping of method and argument hooks.
  *
  * {{{
  * 		class User extends AppModel {
@@ -273,7 +273,7 @@ class CacheableBehavior extends ModelBehavior {
 
 				$results = $this->_cached[$query['key']];
 
-				// Write the new results if it has data
+			// Write the new results if it has data
 			} else if (!empty($results)) {
 				if ($this->appendKey) {
 					foreach ($results as &$result) {
