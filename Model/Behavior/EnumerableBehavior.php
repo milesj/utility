@@ -26,7 +26,7 @@
  * 			);
  *		}
  *
- * 		// Return the enum for the status field
+ * 		// Return the enum array for the status field
  * 		$user->enum('status');
  *
  * 		// Find all users by status
@@ -44,28 +44,33 @@ App::uses('ModelBehavior', 'Model');
 class EnumerableBehavior extends ModelBehavior {
 
 	/**
-	 * Default settings.
+	 * Persist the raw value in the response by appending a new field named <field>_enum.
 	 *
-	 * 	persistValue - Persist the raw value in the response by appending a new field named <field>_enum
-	 * 	formatOnUpdate - Toggle the replacing of raw values with enum values when a record is being updated (checks Model::$id)
-	 *
+	 * @access public
 	 * @var array
 	 */
-	public $settings = array(
-		'persistValue' => true,
-		'formatOnUpdate' => false
-	);
+	public $persistValue = true;
+
+	/**
+	 * Toggle the replacing of raw values with enum values when a record is being updated (checks Model::$id).
+	 *
+	 * @access public
+	 * @var boolean
+	 */
+	public $formatOnUpdate = false;
 
 	/**
 	 * The enum from the model.
 	 *
+	 * @access protected
 	 * @var array
 	 */
-	public $enum = array();
+	protected $_enum = array();
 
 	/**
 	 * Store the settings and Model::$enum.
 	 *
+	 * @access public
 	 * @param Model $model
 	 * @param array $settings
 	 * @throws Exception
@@ -87,13 +92,14 @@ class EnumerableBehavior extends ModelBehavior {
 			}
 		}
 
-		$this->enum = $enum;
-		$this->settings = $settings + $this->settings;
+		$this->_enum = $enum;
+		$this->_set($settings);
 	}
 
 	/**
 	 * Helper method for grabbing and filtering the enum from the model.
 	 *
+	 * @access public
 	 * @param Model $model
 	 * @param string|null $key
 	 * @param string|null $value
@@ -101,7 +107,7 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @throws Exception
 	 */
 	public function enum(Model $model, $key = null, $value = null) {
-		$enum = $this->enum;
+		$enum = $this->_enum;
 
 		if ($key) {
 			if (!isset($enum[$key])) {
@@ -122,6 +128,7 @@ class EnumerableBehavior extends ModelBehavior {
 	 * Generate select options based on the enum fields which will be used for form input auto-magic.
 	 * If a Controller is passed, it will auto-set the data to the views.
 	 *
+	 * @access public
 	 * @param Model $model
 	 * @param Controller|null $controller
 	 * @return array
@@ -129,7 +136,7 @@ class EnumerableBehavior extends ModelBehavior {
 	public function generateOptions(Model $model, Controller $controller = null) {
 		$enum = array();
 
-		foreach ($this->enum as $key => $values) {
+		foreach ($this->_enum as $key => $values) {
 			$var = Inflector::variable(Inflector::pluralize(preg_replace('/_id$/', '', $key)));
 
 			if ($controller) {
@@ -145,20 +152,20 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * Format the results by replacing all enum fields with their respective value replacement.
 	 *
+	 * @access public
 	 * @param Model $model
 	 * @param array $results
 	 * @param boolean $primary
 	 * @return mixed
 	 */
 	public function afterFind(Model $model, $results, $primary) {
-		if (!empty($model->id) && !$this->settings['formatOnUpdate']) {
+		if (!empty($model->id) && !$this->formatOnUpdate) {
 			return $results;
 		}
 
 		if (!empty($results)) {
-			$enum = $this->enum;
+			$enum = $this->_enum;
 			$alias = $model->alias;
-			$settings = $this->settings;
 			$isMulti = true;
 
 			if (!isset($results[0])) {
@@ -172,7 +179,7 @@ class EnumerableBehavior extends ModelBehavior {
 						$value = $result[$alias][$key];
 
 						// Persist integer value
-						if ($settings['persistValue']) {
+						if ($this->persistValue) {
 							$result[$alias][$key . '_enum'] = $value;
 						}
 
