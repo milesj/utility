@@ -2,7 +2,36 @@
 /**
  * EnumerableBehavior
  *
- * A CakePHP Behavior that attaches a file to a model, and uploads automatically, then stores a value in the database.
+ * A CakePHP Behavior that emulates enumerable fields within the model. Each model that contains an enum field
+ * (a field of multiple designated values), should define an $enum map and associated constants.
+ *
+ * After every query, any field within the $enum map will be replaced by the respective value (example: a status
+ * of 0 will be replaced with PENDING). This allows for easy readability for clients and easy usability,
+ * flexibility and portability for developers.
+ *
+ * {{{
+ *		class User extends AppModel {
+ * 			const PENDING = 0;
+ * 			const ACTIVE = 1;
+ * 			const INACTIVE = 2;
+ *
+ *			public $actsAs = array('Utility.Enumerable');
+ *
+ * 			public $enum = array(
+ *				'status' => array(
+ *					self::PENDING => 'PENDING',
+ * 					self::ACTIVE => 'ACTIVE',
+ * 					self::INACTIVE => 'INACTIVE
+ *				)
+ * 			);
+ *		}
+ *
+ * 		// Return the enum for the status field
+ * 		$user->enum('status');
+ *
+ * 		// Find all users by status
+ * 		$user->findByStatus(User::PENDING);
+ * }}}
  *
  * @author		Miles Johnson - http://milesj.me
  * @copyright	Copyright 2006+, Miles Johnson, Inc.
@@ -47,20 +76,19 @@ class EnumerableBehavior extends ModelBehavior {
 		}
 
 		$enum = $model->enum;
+		$parent = $model;
 
 		// Grab the parent enum and merge
-		while ($parent = get_parent_class($model)) {
-			$object = new $parent();
+		while ($parent = get_parent_class($parent)) {
+			$props = get_class_vars($parent);
 
-			if (isset($object->enum)) {
-				$enum = $enum + $object->enum;
+			if (isset($props['enum'])) {
+				$enum = $enum + $props['enum'];
 			}
-
-			$model = $object;
 		}
 
 		$this->enum = $enum;
-		$this->settings = array_merge($this->settings, $settings);
+		$this->settings = $settings + $this->settings;
 	}
 
 	/**
@@ -85,6 +113,30 @@ class EnumerableBehavior extends ModelBehavior {
 			} else {
 				return $enum[$key];
 			}
+		}
+
+		return $enum;
+	}
+
+	/**
+	 * Generate select options based on the enum fields which will be used for form input auto-magic.
+	 * If a Controller is passed, it will auto-set the data to the views.
+	 *
+	 * @param Model $model
+	 * @param Controller|null $controller
+	 * @return array
+	 */
+	public function generateOptions(Model $model, Controller $controller = null) {
+		$enum = array();
+
+		foreach ($this->enum as $key => $values) {
+			$var = Inflector::variable(Inflector::pluralize(preg_replace('/_id$/', '', $key)));
+
+			if ($controller) {
+				$controller->set($var, $values);
+			}
+
+			$enum[$var] = $values;
 		}
 
 		return $enum;
@@ -119,7 +171,7 @@ class EnumerableBehavior extends ModelBehavior {
 					if (isset($result[$alias][$key])) {
 						$value = $result[$alias][$key];
 
-						// Persist ID
+						// Persist integer value
 						if ($settings['persistValue']) {
 							$result[$alias][$key . '_enum'] = $value;
 						}
