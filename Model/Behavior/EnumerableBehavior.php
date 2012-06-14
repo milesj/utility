@@ -34,7 +34,7 @@
  * }}}
  *
  * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2006+, Miles Johnson, Inc.
+ * @copyright	Copyright 2012+, Miles Johnson, Inc.
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
@@ -81,11 +81,11 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @access public
 	 * @param Model $model
 	 * @param array $settings
-	 * @throws Exception
+	 * @throws InvalidArgumentException
 	 */
 	public function setup(Model $model, $settings = array()) {
 		if (!isset($model->enum)) {
-			throw new Exception(sprintf('%s::$enum does not exist', $model->alias));
+			throw new InvalidArgumentException(sprintf('%s::$enum does not exist', $model->alias));
 		}
 
 		$enum = $model->enum;

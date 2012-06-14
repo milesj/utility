@@ -1,0 +1,319 @@
+<?php
+/**
+ * ConvertableBehavior
+ *
+ * A CakePHP Behavior that converts a field into a specific type before an insert or update,
+ * and then converts the field back to its original type when the record is retrieved.
+ *
+ * The currently supported types are: serialize, json, html, base64, url, rawurl, utf8
+ * However, you can define custom converters by creating methods in your model and
+ * setting the engine to the method name.
+ *
+ * {{{
+ *		class User extends AppModel {
+ *			public $actsAs = array(
+ * 				'Utility.Convertable' => array(
+ *					'hash' => 'base64',
+ * 					'data' => array(
+ *						'engine' => 'json',
+ *						'object' => true
+ * 					)
+ * 				)
+ * 			);
+ *		}
+ * }}}
+ *
+ * @author		Miles Johnson - http://milesj.me
+ * @copyright	Copyright 2012+, Miles Johnson, Inc.
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @link		http://milesj.me/code/cakephp/utility
+ */
+
+App::uses('ModelBehavior', 'Model');
+
+class ConvertableBehavior extends ModelBehavior {
+
+	/**
+	 * Conversion modes.
+	 */
+	const TO = 0;
+	const FROM = 1;
+
+	/**
+	 * Mapping of Model fields and conversion settings.
+	 *
+	 * @access public
+	 * @var array
+	 */
+	public $settings = array();
+
+	/**
+	 * Default options for specific engines.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected $_defaults = array(
+		'serialize' => array(
+			'flatten' => false
+		),
+		'json' => array(
+			'object' => false,
+			'flatten' => false
+		),
+		'html' => array(
+			'decode' => false,
+			'encoding' => 'UTF-8',
+			'flags' => ENT_QUOTES
+		)
+	);
+
+	/**
+	 * Merge in the settings for each field.
+	 *
+	 * @access public
+	 * @param Model $model
+	 * @param array $settings
+	 * @throws InvalidArgumentException
+	 */
+	public function setup(Model $model, $settings = array()) {
+		if (!empty($settings)) {
+			foreach ($settings as $field => $options) {
+				if (is_string($options)) {
+					$options = array('engine' => $options);
+				}
+
+				if (!isset($options['engine'])) {
+					throw new InvalidArgumentException(sprintf('Engine option for %s has not been defined', $field));
+				}
+
+				if (isset($this->_defaults[$options['engine']])) {
+					$options = Set::merge($this->_defaults[$options['engine']], $options);
+				}
+
+				$this->settings[$field] = Set::merge(array(
+					'encode' => true,
+					'decode' => true,
+					'flatten' => true
+				), $options);
+			}
+		}
+	}
+
+	/**
+	 * Run the converter before an insert or update query.
+	 *
+	 * @access public
+	 * @param Model $model
+	 * @return boolean|mixed
+	 */
+	public function beforeSave(Model $model) {
+		$model->data = $this->convert($model, $model->data, self::TO);
+
+		return true;
+	}
+
+	/**
+	 * Run the converter after a find query.
+	 *
+	 * @access public
+	 * @param Model $model
+	 * @param mixed $results
+	 * @param boolean $primary
+	 * @return array|mixed
+	 */
+	public function afterFind(Model $model, $results, $primary = true) {
+		if (!empty($results)) {
+			foreach ($results as $index => $result) {
+				$results[$index] = $this->convert($model, $result, self::FROM);
+			}
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Loop through the data and run the correct converter engine on the associated field.
+	 *
+	 * @access public
+	 * @param Model $model
+	 * @param array $data
+	 * @param int $mode
+	 * @return mixed
+	 */
+	public function convert(Model $model, $data, $mode) {
+		if (empty($data[$model->alias])) {
+			return $data;
+		}
+
+		foreach ($data[$model->alias] as $key => $value) {
+			if (isset($this->settings[$key])) {
+				$converter = $this->settings[$key];
+
+				if (method_exists($model, $converter['engine'])) {
+					$function = array($model, $converter['engine']);
+				} else if (method_exists($this, $converter['engine'])) {
+					$function = array($this, $converter['engine']);
+				}
+
+				if (isset($function)) {
+					if (is_array($value) && $converter['flatten']) {
+						$value = (string) $value;
+					}
+
+					$data[$model->alias][$key] = call_user_func_array($function, array($value, $converter, $mode));
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Convert between serialized and unserialized arrays.
+	 *
+	 * @access public
+	 * @param string $value
+	 * @param array $options
+	 * @param int $mode
+	 * @return string
+	 */
+	public function serialize($value, array $options, $mode) {
+		if ($mode === self::TO && $options['encode']) {
+			return serialize($value);
+		}
+
+		if ($mode === self::FROM && $options['decode']) {
+			return @unserialize($value);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Convert between JSON and array types.
+	 *
+	 * @access public
+	 * @param string $value
+	 * @param array $options
+	 * @param int $mode
+	 * @return string
+	 */
+	public function json($value, array $options, $mode) {
+		if ($mode === self::TO && $options['encode']) {
+			return json_encode($value);
+		}
+
+		if ($mode === self::FROM && $options['decode']) {
+			return json_decode($value, $options['object']);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Convert between HTML entities and raw value.
+	 *
+	 * @access public
+	 * @param string $value
+	 * @param array $options
+	 * @param int $mode
+	 * @return string
+	 */
+	public function html($value, array $options, $mode) {
+		if ($mode === self::TO && $options['encode']) {
+			return htmlentities($value, $options['flags'], $options['encoding']);
+		}
+
+		if ($mode === self::FROM && $options['decode']) {
+			return html_entity_decode($value, $options['flags'], $options['encoding']);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Convert between base64 encoding and raw value.
+	 *
+	 * @access public
+	 * @param string $value
+	 * @param array $options
+	 * @param int $mode
+	 * @return string
+	 */
+	public function base64($value, array $options, $mode) {
+		if ($mode === self::TO && $options['encode']) {
+			return base64_encode($value);
+		}
+
+		if ($mode === self::FROM && $options['decode']) {
+			return base64_decode($value);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Convert between url() encoding and raw value.
+	 *
+	 * @access public
+	 * @param string $value
+	 * @param array $options
+	 * @param int $mode
+	 * @return string
+	 */
+	public function url($value, array $options, $mode) {
+		if ($mode === self::TO && $options['encode']) {
+			return urlencode($value);
+		}
+
+		if ($mode === self::FROM && $options['decode']) {
+			return urldecode($value);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Convert between rawurl() encoding and raw value.
+	 *
+	 * @access public
+	 * @param string $value
+	 * @param array $options
+	 * @param int $mode
+	 * @return string
+	 */
+	public function rawurl($value, array $options, $mode) {
+		if ($mode === self::TO && $options['encode']) {
+			return rawurlencode($value);
+		}
+
+		if ($mode === self::FROM && $options['decode']) {
+			return rawurldecode($value);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Convert between UTF-8 encoded and non-encoded strings.
+	 *
+	 * @access public
+	 * @param string $value
+	 * @param array $options
+	 * @param int $mode
+	 * @return string
+	 */
+	public function utf8($value, array $options, $mode) {
+		if ($mode === self::TO && $options['encode']) {
+			return utf8_encode($value);
+		}
+
+		if ($mode === self::FROM && $options['decode']) {
+			return utf8_decode($value);
+		}
+
+		return $value;
+	}
+
+}

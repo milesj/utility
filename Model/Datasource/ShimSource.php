@@ -6,7 +6,7 @@
  * Is used by the CacheableBehavior.
  *
  * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2006+, Miles Johnson, Inc.
+ * @copyright	Copyright 2012+, Miles Johnson, Inc.
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
