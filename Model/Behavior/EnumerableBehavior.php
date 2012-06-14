@@ -52,6 +52,14 @@ class EnumerableBehavior extends ModelBehavior {
 	public $persistValue = true;
 
 	/**
+	 * Should we replace all enum fields with the respective mapped value.
+	 *
+	 * @access public
+	 * @var boolean
+	 */
+	public $format = true;
+
+	/**
 	 * Toggle the replacing of raw values with enum values when a record is being updated (checks Model::$id).
 	 *
 	 * @access public
@@ -159,7 +167,7 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @return mixed
 	 */
 	public function afterFind(Model $model, $results, $primary) {
-		if (!empty($model->id) && !$this->formatOnUpdate) {
+		if (!$this->format || (!empty($model->id) && !$this->formatOnUpdate)) {
 			return $results;
 		}
 
