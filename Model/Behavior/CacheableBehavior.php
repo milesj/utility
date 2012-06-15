@@ -90,8 +90,10 @@ class CacheableBehavior extends ModelBehavior {
 	 * @var array
 	 */
 	public $methodKeys = array(
+		'getAll' => 'getAll',
+		'getList' => 'getList',
 		'getById' => 'getById',
-		'getList' => 'getList'
+		'getBySlug' => 'getBySlug'
 	);
 
 	/**
@@ -114,7 +116,10 @@ class CacheableBehavior extends ModelBehavior {
 	 * @var array
 	 */
 	public $resetHooks = array(
-		'getById' => array('id')
+		'getAll' => true,
+		'getList' => true,
+		'getById' => array('id'),
+		'getBySlug' => array('slug')
 	);
 
 	/**
@@ -273,7 +278,7 @@ class CacheableBehavior extends ModelBehavior {
 
 				$results = $this->_cached[$query['key']];
 
-			// Write the new results if it has data
+				// Write the new results if it has data
 			} else if (!empty($results)) {
 				if ($this->appendKey) {
 					foreach ($results as &$result) {
@@ -481,12 +486,14 @@ class CacheableBehavior extends ModelBehavior {
 				$continue = true;
 				$keys = array($alias . '::' . $key);
 
-				foreach ($args as $field) {
-					if (isset($id[$field])) {
-						$keys[] = $id[$field];
-					} else {
-						$continue = false;
-						break;
+				if (is_array($args)) {
+					foreach ($args as $field) {
+						if (isset($id[$field])) {
+							$keys[] = $id[$field];
+						} else {
+							$continue = false;
+							break;
+						}
 					}
 				}
 
