@@ -170,11 +170,11 @@ class CacheableBehavior extends ModelBehavior {
 	 */
 	public function cleanup(Model $model) {
 		if ($model->id) {
-			$this->resetCache($model->id);
+			$this->resetCache($model, $model->id);
 		}
 
 		foreach ($this->_cached as $key => $value) {
-			$this->deleteCache($key);
+			$this->deleteCache($model, $key);
 		}
 	}
 
@@ -213,8 +213,8 @@ class CacheableBehavior extends ModelBehavior {
 			}
 		}
 
-		$key = $this->cacheKey($key, false);
-		$expires = $this->getExpiration($expires);
+		$key = $this->cacheKey($model, $key, false);
+		$expires = $this->getExpiration($model, $expires);
 
 		$this->_isCaching = true;
 		$this->_currentQuery = array(
@@ -228,7 +228,7 @@ class CacheableBehavior extends ModelBehavior {
 		if (!empty($this->_cached[$key])) {
 			$results = $this->_cached[$key];
 
-		} else if ($fromCache = $this->readCache($key)) {
+		} else if ($fromCache = $this->readCache($model, $key)) {
 			$results = $fromCache;
 		}
 
@@ -281,7 +281,7 @@ class CacheableBehavior extends ModelBehavior {
 					}
 				}
 
-				$this->writeCache($query['key'], $results, $query['expires']);
+				$this->writeCache($model, $query['key'], $results, $query['expires']);
 			}
 
 			$this->_isCaching = false;
@@ -304,7 +304,7 @@ class CacheableBehavior extends ModelBehavior {
 		$key = $this->methodKeys['getById'];
 
 		if ($model->id && $key && (($created && $this->events['onCreate']) || (!$created && $this->events['onUpdate']))) {
-			$this->writeCache(array($model->alias . '::' . $key, $model->id), $model->data);
+			$this->writeCache($model, array($model->alias . '::' . $key, $model->id), $model->data);
 		}
 
 		return $created;
@@ -321,7 +321,7 @@ class CacheableBehavior extends ModelBehavior {
 		$key = $this->methodKeys['getById'];
 
 		if ($model->id && $key && $this->events['onDelete']) {
-			$this->deleteCache(array($model->alias . '::' . $key, $model->id));
+			$this->deleteCache($model, array($model->alias . '::' . $key, $model->id));
 		}
 
 		return true;
@@ -332,13 +332,14 @@ class CacheableBehavior extends ModelBehavior {
 	 * This method can be used within other methods in place the of the find() approach.
 	 *
 	 * @access public
+	 * @param Model $model
 	 * @param array|string $keys
 	 * @param Closure $callback
 	 * @param string $expires
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function cache($keys, $callback, $expires = null) {
+	public function cache(Model $model, $keys, $callback, $expires = null) {
 		if (!($callback instanceof Closure)) {
 			throw new Exception(sprintf('A Closure is required for %s', __METHOD__));
 		}
@@ -347,13 +348,13 @@ class CacheableBehavior extends ModelBehavior {
 			return $callback($this);
 		}
 
-		$key = $this->cacheKey($keys);
-		$results = $this->readCache($key);
+		$key = $this->cacheKey($model, $keys);
+		$results = $this->readCache($model, $key);
 
 		if (empty($results)) {
 			$results = $callback($this);
 
-			$this->writeCache($key, $results, $expires);
+			$this->writeCache($model, $key, $results, $expires);
 		}
 
 		return $results;
@@ -363,11 +364,12 @@ class CacheableBehavior extends ModelBehavior {
 	 * Generate a cache key. The first index should be the method name, the other indices should be unique values.
 	 *
 	 * @access public
+	 * @param Model $model
 	 * @param array|string $keys
 	 * @param boolean $prefix
 	 * @return string
 	 */
-	public function cacheKey($keys, $prefix = true) {
+	public function cacheKey(Model $model, $keys, $prefix = true) {
 		if (is_array($keys)) {
 			$key = array_shift($keys);
 
@@ -395,10 +397,11 @@ class CacheableBehavior extends ModelBehavior {
 	 * Return the expiration time for cache. Either used the passed value, or the settings default.
 	 *
 	 * @access public
+	 * @param Model $model
 	 * @param mixed $expires
 	 * @return int|string
 	 */
-	public function getExpiration($expires = null) {
+	public function getExpiration(Model $model, $expires = null) {
 		if (!$expires) {
 			if ($this->expires) {
 				$expires = $this->expires;
@@ -414,37 +417,40 @@ class CacheableBehavior extends ModelBehavior {
 	 * Read data from the cache.
 	 *
 	 * @access public
+	 * @param Model $model
 	 * @param array|string $keys
 	 * @return mixed
 	 */
-	public function readCache($keys) {
-		return Cache::read($this->cacheKey($keys), $this->cacheConfig);
+	public function readCache(Model $model, $keys) {
+		return Cache::read($this->cacheKey($model, $keys), $this->cacheConfig);
 	}
 
 	/**
 	 * Write data to the cache. Be sure to parse the cache key and validate the config and expires.
 	 *
 	 * @access public
+	 * @param Model $model
 	 * @param array|string $keys
 	 * @param mixed $value
 	 * @param int|string $expires
 	 * @return void
 	 */
-	public function writeCache($keys, $value, $expires = null) {
-		Cache::set('duration', $this->getExpiration($expires), $this->cacheConfig);
+	public function writeCache(Model $model, $keys, $value, $expires = null) {
+		Cache::set('duration', $this->getExpiration($model, $expires), $this->cacheConfig);
 
-		Cache::write($this->cacheKey($keys), $value, $this->cacheConfig);
+		Cache::write($this->cacheKey($model, $keys), $value, $this->cacheConfig);
 	}
 
 	/**
 	 * Delete a cached item based on the defined key(s).
 	 *
 	 * @access public
+	 * @param Model $model
 	 * @param array|string $keys
 	 * @return boolean
 	 */
-	public function deleteCache($keys) {
-		return Cache::delete($this->cacheKey($keys), $this->cacheConfig);
+	public function deleteCache(Model $model, $keys) {
+		return Cache::delete($this->cacheKey($model, $keys), $this->cacheConfig);
 	}
 
 	/**
@@ -452,14 +458,15 @@ class CacheableBehavior extends ModelBehavior {
 	 * If the ID passed is an array of IDs, run through each hook and reset those caches only if each field exists.
 	 *
 	 * @access public
+	 * @param Model $model
 	 * @param string|array $id
 	 * @return void
 	 */
-	public function resetCache($id = null) {
+	public function resetCache(Model $model, $id = null) {
 		$alias = $this->model->alias;
 
 		if ($getList = $this->methodKeys['getList']) {
-			$this->deleteCache(array($alias . '::' . $getList));
+			$this->deleteCache($model, array($alias . '::' . $getList));
 		}
 
 		if (empty($id)) {
@@ -484,7 +491,7 @@ class CacheableBehavior extends ModelBehavior {
 				}
 
 				if ($continue) {
-					$this->deleteCache($keys);
+					$this->deleteCache($model, $keys);
 				}
 			}
 		}
