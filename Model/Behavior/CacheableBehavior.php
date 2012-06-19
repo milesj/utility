@@ -278,7 +278,7 @@ class CacheableBehavior extends ModelBehavior {
 
 				$results = $this->_cached[$query['key']];
 
-				// Write the new results if it has data
+			// Write the new results if it has data
 			} else if (!empty($results)) {
 				if ($this->appendKey) {
 					foreach ($results as &$result) {
