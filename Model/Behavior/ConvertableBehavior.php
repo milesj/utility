@@ -13,8 +13,8 @@
  *		class User extends AppModel {
  *			public $actsAs = array(
  * 				'Utility.Convertable' => array(
- *					'hash' => 'base64',
- * 					'data' => array(
+ *					'fieldOne' => 'base64',
+ * 					'fieldTwo' => array(
  *						'engine' => 'json',
  *						'object' => true
  * 					)

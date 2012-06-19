@@ -8,6 +8,8 @@
  *
  * {{{
  *		class User extends AppModel {
+ *			public $actsAs = array('Utility.Validateable');
+ *
  *			public $validations = array(
  *				'setOne' => array(),
  *				'setTwo' => array()
