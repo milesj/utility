@@ -44,12 +44,19 @@ App::uses('ModelBehavior', 'Model');
 class EnumerableBehavior extends ModelBehavior {
 
 	/**
-	 * Persist the raw value in the response by appending a new field named <field>_enum.
+	 * Format options.
+	 */
+	const NO = 0;
+	const REPLACE = 1;
+	const APPEND = 2;
+
+	/**
+	 * Persist the value in the response by appending a new field named <field><suffix>.
 	 *
 	 * @access public
 	 * @var array
 	 */
-	public $persistValue = true;
+	public $persist = true;
 
 	/**
 	 * Should we replace all enum fields with the respective mapped value.
@@ -57,7 +64,7 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @access public
 	 * @var boolean
 	 */
-	public $format = true;
+	public $format = self::REPLACE;
 
 	/**
 	 * Toggle the replacing of raw values with enum values when a record is being updated (checks Model::$id).
@@ -65,7 +72,15 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @access public
 	 * @var boolean
 	 */
-	public $formatOnUpdate = false;
+	public $onUpdate = false;
+
+	/**
+	 * The suffix to append to the persisted value.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $suffix = '_enum';
 
 	/**
 	 * The enum from the model.
@@ -111,7 +126,7 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @param Model $model
 	 * @param string|null $key
 	 * @param string|null $value
-	 * @return array
+	 * @return array|string|null
 	 * @throws Exception
 	 */
 	public function enum(Model $model, $key = null, $value = null) {
@@ -166,8 +181,8 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @param boolean $primary
 	 * @return mixed
 	 */
-	public function afterFind(Model $model, $results, $primary) {
-		if (!$this->format || (!empty($model->id) && !$this->formatOnUpdate)) {
+	public function afterFind(Model $model, $results, $primary = true) {
+		if (!$this->format || ($model->id && !$this->onUpdate)) {
 			return $results;
 		}
 
@@ -180,12 +195,15 @@ class EnumerableBehavior extends ModelBehavior {
 					if (isset($result[$alias][$key])) {
 						$value = $result[$alias][$key];
 
-						// Persist integer value
-						if ($this->persistValue) {
-							$result[$alias][$key . '_enum'] = $value;
-						}
+						if ($this->format === self::REPLACE) {
+							$result[$alias][$key] = $this->enum($model, $key, $value);
 
-						$result[$alias][$key] = $this->enum($model, $key, $value);
+							if ($this->persist) {
+								$result[$alias][$key . $this->suffix] = $value;
+							}
+						} else if ($this->format === self::APPEND) {
+							$result[$alias][$key . $this->suffix] = $this->enum($model, $key, $value);
+						}
 					}
 				}
 			}
