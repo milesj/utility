@@ -64,7 +64,7 @@ class ValidateableBehavior extends ModelBehavior {
 	 */
 	public function validate(Model $model, $set) {
 		if (!isset($model->validations[$set])) {
-			throw new Exception(sprintf('Validation set %s does not exist'));
+			throw new Exception(sprintf('Validation set %s does not exist', $set));
 		}
 
 		$model->validate = $model->validations[$set];
