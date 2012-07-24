@@ -83,12 +83,12 @@ class EnumerableBehavior extends ModelBehavior {
 	public $suffix = '_enum';
 
 	/**
-	 * The enum from the model.
+	 * The enums for all models.
 	 *
 	 * @access protected
 	 * @var array
 	 */
-	protected $_enum = array();
+	protected $_enums = array();
 
 	/**
 	 * Store the settings and Model::$enum.
@@ -115,7 +115,7 @@ class EnumerableBehavior extends ModelBehavior {
 			}
 		}
 
-		$this->_enum = $enum;
+		$this->_enums[$model->alias] = $enum;
 		$this->_set($settings);
 	}
 
@@ -123,21 +123,22 @@ class EnumerableBehavior extends ModelBehavior {
 	 * Helper method for grabbing and filtering the enum from the model.
 	 *
 	 * @access public
-	 * @param Model $model
-	 * @param string|null $key
-	 * @param string|null $value
-	 * @return array|string|null
+	 * @param string|Model $model
+	 * @param string $key
+	 * @param mixed $value
+	 * @return mixed
 	 * @throws Exception
 	 */
-	public function enum(Model $model, $key = null, $value = null) {
-		$enum = $this->_enum;
+	public function enum($model, $key = null, $value = null) {
+		$alias = is_string($model) ? $model : $model->alias;
+		$enum = $this->_enums[$alias];
 
 		if ($key) {
 			if (!isset($enum[$key])) {
 				throw new Exception(sprintf('Field %s does not exist within %s::$enum', $key, $model->alias));
 			}
 
-			if ($value) {
+			if ($value || $value == 0) {
 				return isset($enum[$key][$value]) ? $enum[$key][$value] : null;
 			} else {
 				return $enum[$key];
@@ -159,7 +160,7 @@ class EnumerableBehavior extends ModelBehavior {
 	public function generateOptions(Model $model, Controller $controller = null) {
 		$enum = array();
 
-		foreach ($this->_enum as $key => $values) {
+		foreach ($this->_enums[$model->alias] as $key => $values) {
 			$var = Inflector::variable(Inflector::pluralize(preg_replace('/_id$/', '', $key)));
 
 			if ($controller) {
@@ -187,11 +188,11 @@ class EnumerableBehavior extends ModelBehavior {
 		}
 
 		if (!empty($results)) {
-			$enum = $this->_enum;
 			$alias = $model->alias;
+			$enum = $this->_enums[$alias];
 
 			foreach ($results as &$result) {
-				foreach ($enum as $key => $values) {
+				foreach ($enum as $key => $nop) {
 					if (isset($result[$alias][$key])) {
 						$value = $result[$alias][$key];
 
