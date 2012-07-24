@@ -46,9 +46,9 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * Format options.
 	 */
-	const NO = 0;
-	const REPLACE = 1;
-	const APPEND = 2;
+	const NO = false;
+	const REPLACE = 'replace';
+	const APPEND = 'append';
 
 	/**
 	 * Persist the value in the response by appending a new field named <field><suffix>.
