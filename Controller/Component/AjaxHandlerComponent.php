@@ -11,6 +11,7 @@
  * @link		http://milesj.me/code/cakephp/utility
  */
 
+App::uses('Component', 'Controller');
 App::import('Vendor', 'Utility.TypeConverter');
 
 class AjaxHandlerComponent extends Component {
