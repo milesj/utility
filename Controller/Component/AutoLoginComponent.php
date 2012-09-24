@@ -5,9 +5,8 @@
  * A CakePHP Component that will automatically login the Auth session for a duration if the user requested to (saves data to cookies).
  *
  * @version		3.6.0
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2012+, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
 
@@ -250,7 +249,7 @@ class AutoLoginComponent extends Component {
 						$password = $data[$model][$this->password];
 						$autoLogin = isset($data[$model]['auto_login']) ? $data[$model]['auto_login'] : !$this->requirePrompt;
 
-						if (!empty($username) && !empty($password) && $autoLogin) {
+						if ($username && $password && $autoLogin) {
 							$this->write($username, $password);
 
 						} else if (!$autoLogin) {

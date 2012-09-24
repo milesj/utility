@@ -5,9 +5,8 @@
  * A CakePHP Component that will automatically handle and render AJAX calls and apply the appropriate returned format and headers.
  *
  * @version		2.0.1
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2012+, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
 
@@ -90,7 +89,7 @@ class AjaxHandlerComponent extends Component {
 			}
 
 			// If not from this domain, destroy
-			if (($this->allowRemote === false) && (strpos(env('HTTP_REFERER'), trim(env('HTTP_HOST'), '/')) === false)) {
+			if (!$this->allowRemote && (strpos(env('HTTP_REFERER'), trim(env('HTTP_HOST'), '/')) === false)) {
 				if (isset($controller->Security)) {
 					$controller->Security->blackHole($controller, 'Invalid referrer detected for this request.');
 				} else {
@@ -145,7 +144,7 @@ class AjaxHandlerComponent extends Component {
 	 * @access public
 	 * @param string $type
 	 * @param array $response
-	 * @return mixed
+	 * @return void
 	 */
 	public function respond($type = 'json', array $response = array()) {
 		if (!$response) {
@@ -166,7 +165,7 @@ class AjaxHandlerComponent extends Component {
 			$this->controller->autoLayout = false;
 			$this->controller->autoRender = false;
 
-			echo $this->__format($type);
+			echo $this->_format($type);
 		}
 	}
 
@@ -186,23 +185,13 @@ class AjaxHandlerComponent extends Component {
 	}
 
 	/**
-	 * What should happen if the class is called stand alone.
-	 *
-	 * @access public
-	 * @return mixed
-	 */
-	public function __toString() {
-		return $this->respond();
-	}
-
-	/**
 	 * Format the response into the right content type.
 	 *
-	 * @access private
+	 * @access protected
 	 * @param string $type
-	 * @return mixed
+	 * @return string
 	 */
-	private function __format($type) {
+	protected function _format($type) {
 		$response = array(
 			'success' => $this->_success,
 			'data' => $this->_data

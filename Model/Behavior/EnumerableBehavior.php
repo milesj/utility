@@ -33,9 +33,9 @@
  * 		$user->findByStatus(User::PENDING);
  * }}}
  *
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2012+, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @version		1.0.0
+ * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
 
@@ -100,7 +100,7 @@ class EnumerableBehavior extends ModelBehavior {
 	 */
 	public function setup(Model $model, $settings = array()) {
 		if (!isset($model->enum)) {
-			throw new InvalidArgumentException(sprintf('%s::$enum does not exist', $model->alias));
+			throw new InvalidArgumentException(sprintf('%s::$enum does not exist.', $model->alias));
 		}
 
 		$enum = $model->enum;
@@ -135,7 +135,7 @@ class EnumerableBehavior extends ModelBehavior {
 
 		if ($key) {
 			if (!isset($enum[$key])) {
-				throw new Exception(sprintf('Field %s does not exist within %s::$enum', $key, $model->alias));
+				throw new Exception(sprintf('Field %s does not exist within %s::$enum.', $key, $model->alias));
 			}
 
 			if ($value || $value == 0) {
@@ -187,7 +187,7 @@ class EnumerableBehavior extends ModelBehavior {
 			return $results;
 		}
 
-		if (!empty($results)) {
+		if ($results) {
 			$alias = $model->alias;
 			$enum = $this->_enums[$alias];
 

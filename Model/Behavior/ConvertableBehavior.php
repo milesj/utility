@@ -23,9 +23,9 @@
  *		}
  * }}}
  *
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2012+, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @version		1.0.0
+ * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
 
@@ -75,9 +75,10 @@ class ConvertableBehavior extends ModelBehavior {
 	 * @param Model $model
 	 * @param array $settings
 	 * @throws InvalidArgumentException
+	 * @return void
 	 */
 	public function setup(Model $model, $settings = array()) {
-		if (!empty($settings)) {
+		if ($settings) {
 			foreach ($settings as $field => $options) {
 				if (is_string($options)) {
 					$options = array('engine' => $options);
@@ -123,7 +124,7 @@ class ConvertableBehavior extends ModelBehavior {
 	 * @return array|mixed
 	 */
 	public function afterFind(Model $model, $results, $primary = true) {
-		if (!empty($results)) {
+		if ($results) {
 			foreach ($results as $index => $result) {
 				$results[$index] = $this->convert($model, $result, self::FROM);
 			}

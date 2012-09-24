@@ -2,17 +2,17 @@
 /**
  * FeedSource
  *
- * A DataSource that can read and parse web feeds. It can aggregate multiple feeds at once into a single result.
+ * A DataSource that can read and parse web feeds and aggregate them into a single result.
  * Supports RSS, RDF and Atom feed types.
  *
  * @version		3.0.1
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2012+, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
 
 App::uses('Folder', 'Utility');
+App::uses('DataSource', 'Model/Datasource');
 App::uses('HttpSocket', 'Network/Http');
 App::import('Vendor', 'Utility.TypeConverter');
 
@@ -27,7 +27,7 @@ class FeedSource extends DataSource {
 	protected $_feeds = array();
 
 	/**
-	 * Default constructor. Set the cache settings.
+	 * Apply the cache settings.
 	 *
 	 * @access public
 	 * @param array $config
@@ -36,18 +36,18 @@ class FeedSource extends DataSource {
 		parent::__construct($config);
 
 		if (Cache::config('feeds') === false) {
-			$cachePath = CACHE .'feeds'. DS;
+			$cachePath = CACHE . 'feeds' . DS;
 
 			if (!file_exists($cachePath)) {
-				$this->Folder = new Folder();
-				$this->Folder->create($cachePath, 0777);
+				$folder = new Folder();
+				$folder->create($cachePath, 0777);
 			}
 
 			Cache::config('feeds', array(
-				'engine' 	=> 'File',
-				'serialize' => true,
+				'engine'	=> 'File',
+				'serialize'	=> true,
 				'prefix'	=> 'feed_',
-				'path' 		=> $cachePath,
+				'path'		=> $cachePath,
 				'duration'	=> '+1 day'
 			));
 		}
@@ -57,7 +57,7 @@ class FeedSource extends DataSource {
 	 * Describe the supported feeds.
 	 *
 	 * @access public
-	 * @param Model $model
+	 * @param Model|string $model
 	 * @return array
 	 */
 	public function describe($model) {
@@ -65,24 +65,25 @@ class FeedSource extends DataSource {
 	}
 
 	/**
-	 * Return a list of aggregrated feed URLs.
+	 * Return a list of aggregated feed URLs.
 	 *
 	 * @access public
+	 * @param array $data
 	 * @return array
 	 */
-	public function listSources() {
+	public function listSources($data = null) {
 		return array_keys($this->_feeds);
 	}
 
 	/**
-	 * Grab the feeds through an HTTP request and parse it out into an array.
+	 * Grab the feeds through an HTTP request and parse it into an array.
 	 *
 	 * @access public
 	 * @param Model $model
-	 * @param array $query
+	 * @param array $queryData
 	 * @return array
 	 */
-	public function read($model, $query = array()) {
+	public function read(Model $model, $queryData = array()) {
 		$defaults = array(
 			'root' => '',
 			'cache' => false,
@@ -117,28 +118,27 @@ class FeedSource extends DataSource {
 		// Loop the sources
 		if (!empty($query['conditions'])) {
 			$cache = $query['feed']['cache'];
-			$http = new HttpSocket();
 
 			// Detect cached first
 			if ($cache) {
 				Cache::set(array('duration' => $query['feed']['expires']));
 				$results = Cache::read($cache, 'feeds');
 
-				if (!empty($results) && is_array($results)) {
+				if ($results && is_array($results)) {
 					return $this->_truncate($results, $query['limit']);
 				}
 			}
 
+			$http = new HttpSocket();
+
 			// Request and parse feeds
 			foreach ($query['conditions'] as $source => $url) {
-				$cacheKey = $model->name .'_'. md5($url);
+				$cacheKey = $model->name . '_' . md5($url);
 
 				$this->_feeds[$url] = Cache::read($cacheKey, 'feeds');
 
-				if (empty($this->_feeds[$url])) {
-					$response = $http->get($url);
-
-					if (!empty($response)) {
+				if (!$this->_feeds[$url]) {
+					if ($response = $http->get($url)) {
 						$this->_feeds[$url] = $this->_process($response, $query, $source);
 
 						Cache::write($cacheKey, $this->_feeds[$url], 'feeds');
@@ -149,9 +149,9 @@ class FeedSource extends DataSource {
 			// Combine and sort feeds
 			$results = array();
 
-			if (!empty($this->_feeds)) {
+			if ($this->_feeds) {
 				foreach ($query['conditions'] as $source => $url) {
-					if (!empty($this->_feeds[$url])) {
+					if ($this->_feeds[$url]) {
 						$results = $this->_feeds[$url] + $results;
 					}
 				}
@@ -173,7 +173,7 @@ class FeedSource extends DataSource {
 			return $this->_truncate($results, $query['limit']);
 		}
 
-		return false;
+		return array();
 	}
 
 	/**
@@ -213,7 +213,7 @@ class FeedSource extends DataSource {
 	 * @param string $source
 	 * @return boolean
 	 */
-	protected function _process($response, $query, $source) {
+	protected function _process(CakeResponse $response, $query, $source) {
 		$feed = TypeConverter::toArray($response->body());
 		$clean = array();
 

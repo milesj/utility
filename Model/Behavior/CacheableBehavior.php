@@ -30,9 +30,9 @@
  * 		}
  * }}}
  *
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2012+, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @version		1.0.0
+ * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
 
@@ -40,6 +40,14 @@ App::uses('ModelBehavior', 'Model');
 App::uses('Set', 'Utility');
 
 class CacheableBehavior extends ModelBehavior {
+
+	/**
+	 * Model instance.
+	 *
+	 * @access public
+	 * @var Model
+	 */
+	public $model;
 
 	/**
 	 * Cache configuration to use.
@@ -51,7 +59,7 @@ class CacheableBehavior extends ModelBehavior {
 
 	/**
 	 * Database configuration to use in the model.
-	 * Should use the Utility.ShimSource datasource.
+	 * Should use the Utility.ShimSource DataSource.
 	 *
 	 * @access public
 	 * @var string
@@ -160,6 +168,7 @@ class CacheableBehavior extends ModelBehavior {
 	 * @access public
 	 * @param Model $model
 	 * @param array $settings
+	 * @return void
 	 */
 	public function setup(Model $model, $settings = array()) {
 		$this->model = $model;
@@ -237,12 +246,12 @@ class CacheableBehavior extends ModelBehavior {
 			$results = $fromCache;
 		}
 
-		// Begin caching by replacing with a shim datasource
+		// Begin caching by replacing with ShimSource
 		if ($results) {
 			$this->_cached[$key] = $results;
 			$this->_previousDbConfig = $model->useDbConfig;
 
-			// Create datasource config if it doesn't exist
+			// Create DataSource config if it doesn't exist
 			$dbConfig = $this->dbConfig;
 
 			if (!isset(ConnectionManager::$config->{$dbConfig})) {
@@ -279,7 +288,7 @@ class CacheableBehavior extends ModelBehavior {
 				$results = $this->_cached[$query['key']];
 
 			// Write the new results if it has data
-			} else if (!empty($results)) {
+			} else if ($results) {
 				if ($this->appendKey) {
 					foreach ($results as &$result) {
 						$result['Cacheable'] = $query;
@@ -320,7 +329,7 @@ class CacheableBehavior extends ModelBehavior {
 	 *
 	 * @access public
 	 * @param Model $model
-	 * @return boolean|void
+	 * @return boolean
 	 */
 	public function afterDelete(Model $model) {
 		$key = $this->methodKeys['getById'];
@@ -346,7 +355,7 @@ class CacheableBehavior extends ModelBehavior {
 	 */
 	public function cache(Model $model, $keys, $callback, $expires = null) {
 		if (!($callback instanceof Closure)) {
-			throw new Exception(sprintf('A Closure is required for %s', __METHOD__));
+			throw new Exception(sprintf('A Closure is required for %s.', __METHOD__));
 		}
 
 		if (Configure::read('Cache.disable')) {
@@ -356,7 +365,7 @@ class CacheableBehavior extends ModelBehavior {
 		$key = $this->cacheKey($model, $keys);
 		$results = $this->readCache($model, $key);
 
-		if (empty($results)) {
+		if (!$results) {
 			$results = $callback($this);
 
 			$this->writeCache($model, $key, $results, $expires);
@@ -378,7 +387,7 @@ class CacheableBehavior extends ModelBehavior {
 		if (is_array($keys)) {
 			$key = array_shift($keys);
 
-			if (!empty($keys)) {
+			if ($keys) {
 				foreach ($keys as $value) {
 					if (is_array($value)) {
 						$key .= '-' . md5(json_encode($value));
@@ -474,14 +483,14 @@ class CacheableBehavior extends ModelBehavior {
 			$this->deleteCache($model, array($alias . '::' . $getList));
 		}
 
-		if (empty($id)) {
+		if (!$id) {
 			return;
 
 		} else if (!is_array($id)) {
 			$id = array('id' => $id);
 		}
 
-		if (!empty($this->resetHooks)) {
+		if ($this->resetHooks) {
 			foreach ($this->resetHooks as $key => $args) {
 				$continue = true;
 				$keys = array($alias . '::' . $key);

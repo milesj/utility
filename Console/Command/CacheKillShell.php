@@ -4,10 +4,9 @@
  *
  * Deletes a single item or all items within a cache configuration.
  *
- * @version		2.0
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2006+, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @version		2.0.0
+ * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
 
@@ -20,6 +19,9 @@ class CacheKillShell extends Shell {
 
 	/**
 	 * Gather params and clear cache.
+	 *
+	 * @access public
+	 * @return void
 	 */
 	public function main() {
 		$this->out('Shell: CacheKill v2.0');

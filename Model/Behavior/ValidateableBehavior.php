@@ -24,9 +24,9 @@
  *		}
  * }}}
  *
- * @author		Miles Johnson - http://milesj.me
- * @copyright	Copyright 2012+, Miles Johnson, Inc.
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
+ * @version		1.0.0
+ * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
 
@@ -59,15 +59,17 @@ class ValidateableBehavior extends ModelBehavior {
 	 * @access public
 	 * @param Model $model
 	 * @param string $set
-	 * @return void
+	 * @return Model
 	 * @throws Exception
 	 */
 	public function validate(Model $model, $set) {
 		if (!isset($model->validations[$set])) {
-			throw new Exception(sprintf('Validation set %s does not exist', $set));
+			throw new Exception(sprintf('Validation set %s does not exist.', $set));
 		}
 
 		$model->validate = $model->validations[$set];
+
+		return $model;
 	}
 
 	/**
