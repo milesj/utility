@@ -92,7 +92,7 @@ class ConvertableBehavior extends ModelBehavior {
 					$options = Set::merge($this->_defaults[$options['engine']], $options);
 				}
 
-				$this->settings[$field] = Set::merge(array(
+				$this->settings[$model->alias][$field] = Set::merge(array(
 					'encode' => true,
 					'decode' => true,
 					'flatten' => true
@@ -148,8 +148,8 @@ class ConvertableBehavior extends ModelBehavior {
 		}
 
 		foreach ($data[$model->alias] as $key => $value) {
-			if (isset($this->settings[$key])) {
-				$converter = $this->settings[$key];
+			if (isset($this->settings[$model->alias][$key])) {
+				$converter = $this->settings[$model->alias][$key];
 
 				if (method_exists($model, $converter['engine'])) {
 					$function = array($model, $converter['engine']);
@@ -206,7 +206,7 @@ class ConvertableBehavior extends ModelBehavior {
 		}
 
 		if ($mode === self::FROM && $options['decode']) {
-			return json_decode($value, $options['object']);
+			return json_decode($value, !$options['object']);
 		}
 
 		return $value;
