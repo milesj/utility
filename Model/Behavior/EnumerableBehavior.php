@@ -99,23 +99,22 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @throws InvalidArgumentException
 	 */
 	public function setup(Model $model, $settings = array()) {
-		if (!isset($model->enum)) {
-			throw new InvalidArgumentException(sprintf('%s::$enum does not exist.', $model->alias));
-		}
+		if (isset($model->enum)) {
+			$enum = $model->enum;
+			$parent = $model;
 
-		$enum = $model->enum;
-		$parent = $model;
+			// Grab the parent enum and merge
+			while ($parent = get_parent_class($parent)) {
+				$props = get_class_vars($parent);
 
-		// Grab the parent enum and merge
-		while ($parent = get_parent_class($parent)) {
-			$props = get_class_vars($parent);
-
-			if (isset($props['enum'])) {
-				$enum = $enum + $props['enum'];
+				if (isset($props['enum'])) {
+					$enum = $enum + $props['enum'];
+				}
 			}
+
+			$this->_enums[$model->alias] = $enum;
 		}
 
-		$this->_enums[$model->alias] = $enum;
 		$this->_set($settings);
 	}
 
@@ -123,7 +122,7 @@ class EnumerableBehavior extends ModelBehavior {
 	 * Helper method for grabbing and filtering the enum from the model.
 	 *
 	 * @access public
-	 * @param string|Model $model
+	 * @param Model|string $model
 	 * @param string $key
 	 * @param mixed $value
 	 * @return mixed
@@ -131,6 +130,11 @@ class EnumerableBehavior extends ModelBehavior {
 	 */
 	public function enum($model, $key = null, $value = null) {
 		$alias = is_string($model) ? $model : $model->alias;
+
+		if (!isset($this->_enums[$alias])) {
+			throw new Exception(sprintf('%s::$enum does not exist.', $alias));
+		}
+
 		$enum = $this->_enums[$alias];
 
 		if ($key) {
@@ -138,7 +142,7 @@ class EnumerableBehavior extends ModelBehavior {
 				throw new Exception(sprintf('Field %s does not exist within %s::$enum.', $key, $model->alias));
 			}
 
-			if ($value || $value == 0) {
+			if ($value !== null) {
 				return isset($enum[$key][$value]) ? $enum[$key][$value] : null;
 			} else {
 				return $enum[$key];
@@ -157,17 +161,19 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @param Controller|null $controller
 	 * @return array
 	 */
-	public function generateOptions(Model $model, Controller $controller = null) {
+	public function options(Model $model, Controller $controller = null) {
 		$enum = array();
 
-		foreach ($this->_enums[$model->alias] as $key => $values) {
-			$var = Inflector::variable(Inflector::pluralize(preg_replace('/_id$/', '', $key)));
+		if (isset($this->_enums[$model->alias])) {
+			foreach ($this->_enums[$model->alias] as $key => $values) {
+				$var = Inflector::variable(Inflector::pluralize(preg_replace('/_id$/', '', $key)));
 
-			if ($controller) {
-				$controller->set($var, $values);
+				if ($controller) {
+					$controller->set($var, $values);
+				}
+
+				$enum[$var] = $values;
 			}
-
-			$enum[$var] = $values;
 		}
 
 		return $enum;
