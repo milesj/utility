@@ -69,7 +69,7 @@ class CacheableBehavior extends ModelBehavior {
 			'getBySlug' => 'getBySlug'
 		),
 		'events' => array(
-			'onCreate' => true,
+			'onCreate' => false,
 			'onUpdate' => true,
 			'onDelete' => true
 		),

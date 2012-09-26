@@ -57,24 +57,24 @@ class SpamBlockerBehavior extends ModelBehavior {
 		'model' => 'Article',
 		'link' => '',
 		'email' => '',
-		'useSlug' => true,
+		'useSlug' => false,
 		'savePoints' => true,
 		'sendEmail' => true,
 		'deletion' => -10,
-		'blockMessage' => 'Your comment has been denied.',
+		'blockMessage' => 'Your comment has been denied and has been flagged as spam.',
 		'keywords' => array(
 			'levitra', 'viagra', 'casino', 'sex', 'loan', 'finance', 'slots', 'debt', 'free', 'stock', 'debt',
 			'marketing', 'rates', 'ad', 'bankruptcy', 'homeowner', 'discreet', 'preapproved', 'unclaimed',
 			'email', 'click', 'unsubscribe', 'buy', 'sell', 'sales', 'earn'
 		),
-		'blacklist' => array('.html', '.info', '?', '&', '.de', '.pl', '.cn', '.ru', '.biz'),
+		'blacklist' => array('.html', '.info', '.de', '.pl', '.cn', '.ru', '.biz'),
 		'columnMap' => array(
+			'foreignKey'	=> 'article_id',
 			'id'			=> 'id',
 			'author'		=> 'name',
 			'content'		=> 'content',
 			'email'			=> 'email',
 			'website'		=> 'website',
-			'foreign_id'	=> 'article_id',
 			'slug'			=> 'slug',
 			'title'			=> 'title',
 			'status'		=> 'status',
@@ -116,6 +116,9 @@ class SpamBlockerBehavior extends ModelBehavior {
 		$points = 0;
 
 		if ($data) {
+			$website = $data[$columnMap['website']];
+			$content = $data[$columnMap['content']];
+			$author = $data[$columnMap['author']];
 
 			// If referrer does not come from the originating domain
 			$referrer = env('HTTP_REFERER');
@@ -125,11 +128,11 @@ class SpamBlockerBehavior extends ModelBehavior {
 			}
 
 			// Get links in the content
-			preg_match_all('/(^|[\n ])(?:(?:http|ftp|irc)s?:\/\/|www.)(?:[-a-z0-9]+\.)+[a-z]{2,4}(?:[-a-z0-9._\/&=+%?;\#]+)/is', $data[$columnMap['content']], $matches);
+			preg_match_all('/(^|\s|\n)(?:(?:http|ftp|irc)s?:\/\/|www\.)(?:[-a-z0-9]+\.)+[a-z\.]{2,5}/is', $content, $matches);
 			$links = $matches[0];
 
 			$totalLinks = count($links);
-			$length = mb_strlen($data[$columnMap['content']]);
+			$length = mb_strlen($content);
 
 			// How many links are in the body
 			// +2 if less than 2, -1 per link if over 2
@@ -173,7 +176,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 			// Keyword search
 			// -1 per blacklisted keyword
 			foreach ($settings['keywords'] as $keyword) {
-				if (stripos($data[$columnMap['content']], $keyword) !== false) {
+				if (stripos($content, $keyword) !== false) {
 					--$points;
 				}
 			}
@@ -202,10 +205,6 @@ class SpamBlockerBehavior extends ModelBehavior {
 
 			// Check the website, author and comment for blacklisted
 			// -1 per instance
-			$website = $data[$columnMap['website']];
-			$content = $data[$columnMap['content']];
-			$name = $data[$columnMap['author']];
-
 			foreach ($settings['blacklist'] as $character) {
 				if (stripos($website, $character) !== false) {
 					--$points;
@@ -213,7 +212,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 			}
 
 			foreach ($settings['keywords'] as $keyword) {
-				if (stripos($name, $keyword) !== false) {
+				if (stripos($author, $keyword) !== false) {
 					--$points;
 				}
 
@@ -224,7 +223,12 @@ class SpamBlockerBehavior extends ModelBehavior {
 
 			// Body starts with...
 			// -10 points
-			$firstWord = mb_substr($data[$columnMap['content']], 0, stripos($data[$columnMap['content']], ' '));
+			if ($pos = stripos($content, ' ')) {
+				$firstWord = mb_substr($content, 0, $pos);
+			} else {
+				$firstWord = trim($content);
+			}
+
 			$firstDisallow = array('interesting', 'cool', 'sorry') + $settings['keywords'];
 
 			if (in_array(mb_strtolower($firstWord), $firstDisallow)) {
@@ -233,14 +237,14 @@ class SpamBlockerBehavior extends ModelBehavior {
 
 			// Author name has http:// in it
 			// -2 points
-			if (stripos($data[$columnMap['author']], 'http://') !== false) {
+			if (stripos($author, 'http://') !== false) {
 				$points = $points - 2;
 			}
 
 			// Body used in previous comment
 			// -1 per exact comment
 			$previousComments = $model->find('count', array(
-				'conditions' => array($columnMap['content'] => $data[$columnMap['content']]),
+				'conditions' => array($columnMap['content'] => $content),
 				'recursive' => -1,
 				'contain' => false
 			));
@@ -251,7 +255,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 
 			// Random character match
 			// -1 point per 5 consecutive consonants
-			preg_match_all('/[^aAeEiIoOuU\s]{5,}+/i', $data[$columnMap['content']], $matches);
+			preg_match_all('/[^aAeEiIoOuU\s]{5,}+/i', $content, $matches);
 			$totalConsonants = count($matches[0]);
 
 			if ($totalConsonants > 0) {
@@ -264,7 +268,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 			$status = $statusMap['approved'];
 		} else if ($points == 0) {
 			$status = $statusMap['pending'];
-		} else if ($points <= $this->settings['deletion']) {
+		} else if ($points <= $settings['deletion']) {
 			$status = $statusMap['deleted'];
 		} else {
 			$status = $statusMap['spam'];
@@ -272,6 +276,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 
 		if ($status == $statusMap['deleted']) {
 			$model->validationErrors[$columnMap['content']] = $settings['blockMessage'];
+
 			return false;
 
 		} else {
@@ -299,7 +304,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 	 * @param int $points
 	 * @return void
 	 */
-	public function notify(Model $model, $data, $status, $points) {
+	public function notify(Model $model, $data, $status, $points = 0) {
 		$settings = $this->settings[$model->alias];
 		$columnMap = $settings['columnMap'];
 
@@ -314,7 +319,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 			$article = ClassRegistry::init($settings['model']);
 			$result = $article->find('first', array(
 				'fields' => $fields,
-				'conditions' => array($columnMap['id'] => $data[$columnMap['foreign_id']]),
+				'conditions' => array($columnMap['id'] => $data[$columnMap['foreignKey']]),
 				'recursive' => -1,
 				'contain' => false
 			));
