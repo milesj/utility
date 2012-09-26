@@ -147,7 +147,7 @@ class AjaxHandlerComponent extends Component {
 	 * @return void
 	 */
 	public function respond($type = 'json', array $response = array()) {
-		if (!$response) {
+		if ($response) {
 			$response = $response + array(
 				'success' => false,
 				'data' => '',
