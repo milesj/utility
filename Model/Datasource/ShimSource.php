@@ -5,6 +5,10 @@
  * A Model DataSource that does nothing and is used to trick the model layer for specific functionality.
  * Is used by the CacheableBehavior.
  *
+ * {{{
+ *		public $shim = array('datasource' => 'Utility.ShimSource');
+ * }}}
+ *
  * @version		1.0.0
  * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License

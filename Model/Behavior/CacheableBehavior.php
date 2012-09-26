@@ -58,7 +58,7 @@ class CacheableBehavior extends ModelBehavior {
 	 */
 	protected $_defaults = array(
 		'cacheConfig' => 'default',
-		'dbConfig' => 'cacheable',
+		'dbConfig' => 'shim',
 		'expires' => '+5 minutes',
 		'prefix' => '',
 		'appendKey' => 'Cacheable',

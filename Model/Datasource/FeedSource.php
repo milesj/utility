@@ -5,6 +5,10 @@
  * A DataSource that can read and parse web feeds and aggregate them into a single result.
  * Supports RSS, RDF and Atom feed types.
  *
+ * {{{
+ *		public $feed = array('datasource' => 'Utility.FeedSource');
+ * }}}
+ *
  * @version		3.0.1
  * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
@@ -84,6 +88,7 @@ class FeedSource extends DataSource {
 	 * @return array
 	 */
 	public function read(Model $model, $queryData = array()) {
+		$query = $queryData;
 		$defaults = array(
 			'root' => '',
 			'cache' => false,
@@ -100,7 +105,7 @@ class FeedSource extends DataSource {
 		$query['feed']['order'] = 'ASC';
 		$query['feed']['sort'] = 'date';
 
-		if (!empty($query['order'][0])) {
+		if (isset($query['order'][0])) {
 			if (is_array($query['order'][0])) {
 				$sort = array_keys($query['order'][0]);
 				$query['feed']['sort'] = $sort[0];
@@ -121,7 +126,8 @@ class FeedSource extends DataSource {
 
 			// Detect cached first
 			if ($cache) {
-				Cache::set(array('duration' => $query['feed']['expires']));
+				Cache::set('duration', $query['feed']['expires']);
+
 				$results = Cache::read($cache, 'feeds');
 
 				if ($results && is_array($results)) {
@@ -208,28 +214,28 @@ class FeedSource extends DataSource {
 	 * Processes the feed and rebuilds an array based on the feeds type (RSS, RDF, Atom).
 	 *
 	 * @access protected
-	 * @param CakeResponse $response
+	 * @param HttpResponse $response
 	 * @param array $query
 	 * @param string $source
 	 * @return boolean
 	 */
-	protected function _process(CakeResponse $response, $query, $source) {
+	protected function _process(HttpResponse $response, $query, $source) {
 		$feed = TypeConverter::toArray($response->body());
 		$clean = array();
 
 		if (!empty($query['root']) && !empty($feed[$query['feed']['root']])) {
 			$items = $feed[$query['feed']['root']];
 		} else {
-			// Rss
+			// RSS
 			if (isset($feed['channel']) && isset($feed['channel']['item'])) {
 				$items = $feed['channel']['item'];
-			// Rdf
+			// RDF
 			} else if (isset($feed['item'])) {
 				$items = $feed['item'];
 			// Atom
 			} else if (isset($feed['entry'])) {
 				$items = $feed['entry'];
-			// Xml
+			// XML
 			} else {
 				$items = $feed;
 			}
@@ -311,7 +317,7 @@ class FeedSource extends DataSource {
 				}
 			}
 
-			if (!empty($data)) {
+			if ($data) {
 				$clean[$sort] = $data;
 			}
 		}

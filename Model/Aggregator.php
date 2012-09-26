@@ -23,12 +23,12 @@ class Aggregator extends Model {
 	public $useTable = false;
 
 	/**
-	 * Use the feeds datasource.
+	 * Use FeedSource.
 	 *
 	 * @access public
 	 * @var boolean
 	 */
-	public $useDbConfig = 'feeds';
+	public $useDbConfig = 'feed';
 
 	/**
 	 * Overwrite the find method to be specific for feed aggregation.
@@ -37,9 +37,6 @@ class Aggregator extends Model {
 	 * @access public
 	 * @param string $type
 	 * @param array $options
-	 *		- root: A custom root node
-	 *		- cache: Key for cache
-	 *		- expires: How long should the feed be cached
 	 * @return array
 	 */
 	public function find($type, array $options = array()) {
