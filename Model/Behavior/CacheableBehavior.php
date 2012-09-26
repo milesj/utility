@@ -38,6 +38,7 @@
 
 App::uses('ModelBehavior', 'Model');
 App::uses('Set', 'Utility');
+App::uses('Folder', 'Utility');
 
 class CacheableBehavior extends ModelBehavior {
 
@@ -57,7 +58,7 @@ class CacheableBehavior extends ModelBehavior {
 	 * @var array
 	 */
 	protected $_defaults = array(
-		'cacheConfig' => 'default',
+		'cacheConfig' => 'sql',
 		'dbConfig' => 'shim',
 		'expires' => '+5 minutes',
 		'prefix' => '',
@@ -122,7 +123,27 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return void
 	 */
 	public function setup(Model $model, $settings = array()) {
-		$this->settings[$model->alias] = Set::merge($this->_defaults, $settings);
+		$settings = Set::merge($this->_defaults, $settings);
+
+		$this->settings[$model->alias] = $settings;
+
+		// Set cache config if it doesn't exist
+		if (Cache::config($settings['cacheConfig']) === false) {
+			$cachePath = CACHE . $settings['cacheConfig'] . DS;
+
+			if (!file_exists($cachePath)) {
+				$folder = new Folder();
+				$folder->create($cachePath, 0777);
+			}
+
+			Cache::config($settings['cacheConfig'], array(
+				'engine'	=> 'File',
+				'serialize'	=> true,
+				'prefix'	=> '',
+				'path'		=> $cachePath,
+				'duration'	=> $settings['expires']
+			));
+		}
 	}
 
 	/**
@@ -202,14 +223,12 @@ class CacheableBehavior extends ModelBehavior {
 			$this->_previousDbConfig = $model->useDbConfig;
 
 			// Create DataSource config if it doesn't exist
-			$dbConfig = $this->dbConfig;
+			$dbConfig = $this->settings[$model->alias]['dbConfig'];
 
-			if (!isset(ConnectionManager::$config->{$dbConfig})) {
-				ConnectionManager::$config->{$dbConfig} = array(
-					'datasource' => 'Utility.ShimSource',
-					'database' => null
-				);
-			}
+			ConnectionManager::create($dbConfig, array(
+				'datasource' => 'Utility.ShimSource',
+				'database' => null
+			));
 
 			$model->useDbConfig = $dbConfig;
 		}
@@ -269,7 +288,7 @@ class CacheableBehavior extends ModelBehavior {
 		$events = $this->settings[$model->alias]['events'];
 
 		if ($model->id && $key && (($created && $events['onCreate']) || (!$created && $events['onUpdate']))) {
-			$this->writeCache($model, array($model->alias . '::' . $key, $model->id), $model->data);
+			$this->writeCache($model, array($model->alias . '::' . $key, $model->id), array($model->data));
 		}
 
 		return $created;
@@ -355,6 +374,9 @@ class CacheableBehavior extends ModelBehavior {
 			$key = (string) $this->settings[$model->alias]['prefix'] . $key;
 		}
 
+		// Replace AppModel with the current Model so we don't run into conflicts
+		$key = str_replace(array('AppModel', '::'), array($model->alias, '_'), $key);
+
 		return $key;
 	}
 
@@ -398,12 +420,12 @@ class CacheableBehavior extends ModelBehavior {
 	 * @param array|string $keys
 	 * @param mixed $value
 	 * @param int|string $expires
-	 * @return void
+	 * @return boolean
 	 */
 	public function writeCache(Model $model, $keys, $value, $expires = null) {
 		Cache::set('duration', $this->getExpiration($model, $expires), $this->settings[$model->alias]['cacheConfig']);
 
-		Cache::write($this->cacheKey($model, $keys), $value, $this->settings[$model->alias]['cacheConfig']);
+		return Cache::write($this->cacheKey($model, $keys), $value, $this->settings[$model->alias]['cacheConfig']);
 	}
 
 	/**
@@ -425,7 +447,7 @@ class CacheableBehavior extends ModelBehavior {
 	 * @access public
 	 * @param Model $model
 	 * @param string|array $id
-	 * @return void
+	 * @return boolean
 	 */
 	public function resetCache(Model $model, $id = null) {
 		$alias = $model->alias;
@@ -435,7 +457,7 @@ class CacheableBehavior extends ModelBehavior {
 		}
 
 		if (!$id) {
-			return;
+			return false;
 
 		} else if (!is_array($id)) {
 			$id = array('id' => $id);
@@ -464,6 +486,25 @@ class CacheableBehavior extends ModelBehavior {
 				}
 			}
 		}
+
+		return true;
+	}
+
+	/**
+	 * Clear all the currently cached items.
+	 *
+	 * @access public
+	 * @param Model $model
+	 * @return boolean
+	 */
+	public function clearCache(Model $model) {
+		if ($this->_cached) {
+			foreach ($this->_cached as $key => $value) {
+				$this->deleteCache($model, $key);
+			}
+		}
+
+		return Cache::clear(false, $this->settings[$model->alias]['cacheConfig']);
 	}
 
 }
