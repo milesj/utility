@@ -37,6 +37,9 @@ class ValidateableBehavior extends ModelBehavior {
 	/**
 	 * Default settings.
 	 *
+	 * 	defaultSet	- The default validation set to use if none defined
+	 * 	resetAfter	- Should Model::$validate be reset after validation
+	 *
 	 * @access protected
 	 * @var array
 	 */

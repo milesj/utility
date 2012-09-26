@@ -42,92 +42,43 @@ App::uses('Set', 'Utility');
 class CacheableBehavior extends ModelBehavior {
 
 	/**
-	 * Model instance.
+	 * Default settings.
 	 *
-	 * @access public
-	 * @var Model
-	 */
-	public $model;
-
-	/**
-	 * Cache configuration to use.
+	 * 	cacheConfig		- Cache configuration to use
+	 * 	dbConfig		- Database configuration to use in the model
+	 * 	expires			- Default expiration time for all cache items
+	 * 	prefix			- String to prepend to all cache keys
+	 * 	appendKey		- Should we append the cache key and expires to the results
+	 * 	methodKeys		- Mapping of primary cache keys to methods
+	 * 	events			- Toggle cache reset events for specific conditions
+	 * 	resetHooks		- Mapping of cache keys and arguments to reset with
 	 *
-	 * @access public
-	 * @var string
-	 */
-	public $cacheConfig = 'default';
-
-	/**
-	 * Database configuration to use in the model.
-	 * Should use the Utility.ShimSource DataSource.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $dbConfig = 'cacheable';
-
-	/**
-	 * Default expiration time for all cache items.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $expires = '+5 minutes';
-
-	/**
-	 * String to prepend to all cache keys.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $prefix = '';
-
-	/**
-	 * Should we append the cache key and expires to the results.
-	 * Will add a "Cacheable" index to each array index.
-	 *
-	 * @access public
-	 * @var boolean
-	 */
-	public $appendKey = true;
-
-	/**
-	 * Mapping of primary cache keys to methods.
-	 *
-	 * @access public
+	 * @access protected
 	 * @var array
 	 */
-	public $methodKeys = array(
-		'getAll' => 'getAll',
-		'getList' => 'getList',
-		'getById' => 'getById',
-		'getBySlug' => 'getBySlug'
-	);
-
-	/**
-	 * Toggle cache reset events for specific conditions.
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public $events = array(
-		'onCreate' => true,
-		'onUpdate' => true,
-		'onDelete' => true
-	);
-
-	/**
-	 * Mapping of cache keys and arguments.
-	 * Will be looped through and reset using resetCache().
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public $resetHooks = array(
-		'getAll' => true,
-		'getList' => true,
-		'getById' => array('id'),
-		'getBySlug' => array('slug')
+	protected $_defaults = array(
+		'cacheConfig' => 'default',
+		'dbConfig' => 'cacheable',
+		'expires' => '+5 minutes',
+		'prefix' => '',
+		'appendKey' => 'Cacheable',
+		'methodKeys' => array(
+			'getAll' => 'getAll',
+			'getList' => 'getList',
+			'getById' => 'getById',
+			'getBySlug' => 'getBySlug'
+		),
+		'events' => array(
+			'onCreate' => true,
+			'onUpdate' => true,
+			'onDelete' => true
+		),
+		'resetHooks' => array(
+			'getAll' => true,
+			'getList' => true,
+			'getById' => array('id'),
+			'getBySlug' => array('slug')
+		)
 	);
 
 	/**
@@ -171,8 +122,7 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return void
 	 */
 	public function setup(Model $model, $settings = array()) {
-		$this->model = $model;
-		$this->_set($settings);
+		$this->settings[$model->alias] = Set::merge($this->_defaults, $settings);
 	}
 
 	/**
@@ -289,9 +239,9 @@ class CacheableBehavior extends ModelBehavior {
 
 			// Write the new results if it has data
 			} else if ($results) {
-				if ($this->appendKey) {
+				if ($key = $this->settings[$model->alias]['appendKey']) {
 					foreach ($results as &$result) {
-						$result['Cacheable'] = $query;
+						$result[$key] = $query;
 					}
 				}
 
@@ -315,9 +265,10 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return boolean
 	 */
 	public function afterSave(Model $model, $created = true) {
-		$key = $this->methodKeys['getById'];
+		$key = $this->settings[$model->alias]['methodKeys']['getById'];
+		$events = $this->settings[$model->alias]['events'];
 
-		if ($model->id && $key && (($created && $this->events['onCreate']) || (!$created && $this->events['onUpdate']))) {
+		if ($model->id && $key && (($created && $events['onCreate']) || (!$created && $events['onUpdate']))) {
 			$this->writeCache($model, array($model->alias . '::' . $key, $model->id), $model->data);
 		}
 
@@ -332,9 +283,9 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return boolean
 	 */
 	public function afterDelete(Model $model) {
-		$key = $this->methodKeys['getById'];
+		$key = $this->settings[$model->alias]['methodKeys']['getById'];
 
-		if ($model->id && $key && $this->events['onDelete']) {
+		if ($model->id && $key && $this->settings[$model->alias]['events']['onDelete']) {
 			$this->deleteCache($model, array($model->alias . '::' . $key, $model->id));
 		}
 
@@ -401,7 +352,7 @@ class CacheableBehavior extends ModelBehavior {
 		}
 
 		if ($prefix) {
-			$key = (string) $this->prefix . $key;
+			$key = (string) $this->settings[$model->alias]['prefix'] . $key;
 		}
 
 		return $key;
@@ -417,8 +368,8 @@ class CacheableBehavior extends ModelBehavior {
 	 */
 	public function getExpiration(Model $model, $expires = null) {
 		if (!$expires) {
-			if ($this->expires) {
-				$expires = $this->expires;
+			if ($this->settings[$model->alias]['expires']) {
+				$expires = $this->settings[$model->alias]['expires'];
 			} else {
 				$expires = '+5 minutes';
 			}
@@ -436,7 +387,7 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return mixed
 	 */
 	public function readCache(Model $model, $keys) {
-		return Cache::read($this->cacheKey($model, $keys), $this->cacheConfig);
+		return Cache::read($this->cacheKey($model, $keys), $this->settings[$model->alias]['cacheConfig']);
 	}
 
 	/**
@@ -450,9 +401,9 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return void
 	 */
 	public function writeCache(Model $model, $keys, $value, $expires = null) {
-		Cache::set('duration', $this->getExpiration($model, $expires), $this->cacheConfig);
+		Cache::set('duration', $this->getExpiration($model, $expires), $this->settings[$model->alias]['cacheConfig']);
 
-		Cache::write($this->cacheKey($model, $keys), $value, $this->cacheConfig);
+		Cache::write($this->cacheKey($model, $keys), $value, $this->settings[$model->alias]['cacheConfig']);
 	}
 
 	/**
@@ -464,7 +415,7 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return boolean
 	 */
 	public function deleteCache(Model $model, $keys) {
-		return Cache::delete($this->cacheKey($model, $keys), $this->cacheConfig);
+		return Cache::delete($this->cacheKey($model, $keys), $this->settings[$model->alias]['cacheConfig']);
 	}
 
 	/**
@@ -477,9 +428,9 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return void
 	 */
 	public function resetCache(Model $model, $id = null) {
-		$alias = $this->model->alias;
+		$alias = $model->alias;
 
-		if ($getList = $this->methodKeys['getList']) {
+		if ($getList = $this->settings[$alias]['methodKeys']['getList']) {
 			$this->deleteCache($model, array($alias . '::' . $getList));
 		}
 
@@ -490,8 +441,10 @@ class CacheableBehavior extends ModelBehavior {
 			$id = array('id' => $id);
 		}
 
-		if ($this->resetHooks) {
-			foreach ($this->resetHooks as $key => $args) {
+		$resetHooks = $this->settings[$alias]['resetHooks'];
+
+		if ($resetHooks) {
+			foreach ($resetHooks as $key => $args) {
 				$continue = true;
 				$keys = array($alias . '::' . $key);
 
