@@ -35,12 +35,15 @@ App::uses('ModelBehavior', 'Model');
 class ValidateableBehavior extends ModelBehavior {
 
 	/**
-	 * The default fallback set to use.
+	 * Default settings.
 	 *
-	 * @access public
-	 * @var string
+	 * @access protected
+	 * @var array
 	 */
-	public $defaultSet = 'default';
+	protected $_defaults = array(
+		'defaultSet' => 'default',
+		'resetAfter' => true
+	);
 
 	/**
 	 * Merge settings.
@@ -50,7 +53,7 @@ class ValidateableBehavior extends ModelBehavior {
 	 * @param array $settings
 	 */
 	public function setup(Model $model, $settings = array()) {
-		$this->_set($settings);
+		$this->settings[$model->alias] = Set::merge($this->_defaults, $settings);
 	}
 
 	/**
@@ -80,8 +83,25 @@ class ValidateableBehavior extends ModelBehavior {
 	 * @return boolean
 	 */
 	public function beforeValidate(Model $model) {
-		if (empty($model->validate) && isset($model->validations[$this->defaultSet])) {
-			$this->validate($model, $this->defaultSet);
+		$default = $this->settings[$model->alias]['defaultSet'];
+
+		if (empty($model->validate) && isset($model->validations[$default])) {
+			$this->validate($model, $default);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Reset Model::$validate after validation.
+	 *
+	 * @access public
+	 * @param Model $model
+	 * @return boolean
+	 */
+	public function afterValidate(Model $model) {
+		if ($this->settings[$model->alias]['resetAfter']) {
+			$model->validate = array();
 		}
 
 		return true;

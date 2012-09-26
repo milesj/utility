@@ -48,7 +48,7 @@ class ConvertableBehavior extends ModelBehavior {
 	public $settings = array();
 
 	/**
-	 * Default options for specific engines.
+	 * Default settings per engine.
 	 *
 	 * @access protected
 	 * @var array
@@ -65,7 +65,11 @@ class ConvertableBehavior extends ModelBehavior {
 			'decode' => false,
 			'encoding' => 'UTF-8',
 			'flags' => ENT_QUOTES
-		)
+		),
+		'base64' => array(),
+		'url' => array(),
+		'rawurl' => array(),
+		'utf8' => array()
 	);
 
 	/**
@@ -88,9 +92,7 @@ class ConvertableBehavior extends ModelBehavior {
 					throw new InvalidArgumentException(sprintf('Engine option for %s has not been defined', $field));
 				}
 
-				if (isset($this->_defaults[$options['engine']])) {
-					$options = Set::merge($this->_defaults[$options['engine']], $options);
-				}
+				$options = Set::merge($this->_defaults[$options['engine']], $options);
 
 				$this->settings[$model->alias][$field] = Set::merge(array(
 					'encode' => true,
