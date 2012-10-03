@@ -284,11 +284,16 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return boolean
 	 */
 	public function afterSave(Model $model, $created = true) {
+		$id = $model->id;
 		$key = $this->settings[$model->alias]['methodKeys']['getById'];
 		$events = $this->settings[$model->alias]['events'];
 
-		if ($model->id && $key && (($created && $events['onCreate']) || (!$created && $events['onUpdate']))) {
-			$this->writeCache($model, array($model->alias . '::' . $key, $model->id), array($model->data));
+		if ($id && $key && (($created && $events['onCreate']) || (!$created && $events['onUpdate']))) {
+			$this->writeCache($model, array($model->alias . '::' . $key, $id), array($model->read(null, $id)));
+		}
+
+		if ($getList = $this->settings[$model->alias]['methodKeys']['getList']) {
+			$this->deleteCache($model, array($model->alias . '::' . $getList));
 		}
 
 		return $created;
@@ -302,10 +307,8 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return boolean
 	 */
 	public function afterDelete(Model $model) {
-		$key = $this->settings[$model->alias]['methodKeys']['getById'];
-
-		if ($model->id && $key && $this->settings[$model->alias]['events']['onDelete']) {
-			$this->deleteCache($model, array($model->alias . '::' . $key, $model->id));
+		if ($this->settings[$model->alias]['events']['onDelete']) {
+			$this->resetCache($model, $model->id);
 		}
 
 		return true;
