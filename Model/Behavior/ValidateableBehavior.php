@@ -56,7 +56,7 @@ class ValidateableBehavior extends ModelBehavior {
 	 * @param array $settings
 	 */
 	public function setup(Model $model, $settings = array()) {
-		$this->settings[$model->alias] = Set::merge($this->_defaults, $settings);
+		$this->settings[$model->alias] = array_merge($this->_defaults, $settings);
 	}
 
 	/**
