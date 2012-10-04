@@ -84,9 +84,7 @@ class SluggableBehavior extends ModelBehavior {
 			$slug = substr($slug, 0, ($settings['length'] - 5));
 		}
 
-		$slug = $this->_makeUnique($model, $slug);
-
-		$model->data[$model->alias][$settings['slug']] = $slug;
+		$model->data[$model->alias][$settings['slug']] = $this->_makeUnique($model, $slug);
 
 		return true;
 	}
@@ -100,6 +98,7 @@ class SluggableBehavior extends ModelBehavior {
 	 * @return string
 	 */
 	public function slugify(Model $model, $string) {
+		$string = str_replace('&amp;', 'and', $string);
 		$string = str_replace('&', 'and', $string);
 		$string = str_replace('@', 'at', $string);
 

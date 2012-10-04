@@ -20,6 +20,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 * Cacheable - Automatic database query caching
 * Convertable - Converts between types before and after database queries
 * Enumerable - Provides enumerable support for database columns
+* Sluggable - Generate a slug based off another field
 * SpamBlocker - Validates comments against a point system and flags as spam
 * Validateable - Allows for multiple sets of validation rules
 

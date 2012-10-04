@@ -4,7 +4,8 @@
 	"description": "A collection of CakePHP utility libraries.",
 	"keywords": [
 		"cakephp", "utility", "plugin", "controller", "component", "model", "behavior", "datasource", "shell", "helper",
-		"auto-login", "ajax-handler", "cacheable", "convertable", "enumerable", "spam-blocker", "validateable", "cache-kill", "feed"
+		"auto-login", "ajax-handler", "cacheable", "convertable", "enumerable", "spam-blocker", "validateable", "cache-kill",
+		"feed", "sluggable", "aggregator"
 	],
 	"homepage": "http://milesj.me/code/cakephp/utility",
 	"license": "MIT",
