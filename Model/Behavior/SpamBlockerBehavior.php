@@ -97,7 +97,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 	 * @return void
 	 */
 	public function setup(Model $model, $settings = array()) {
-		$this->settings[$model->alias] = Set::merge($this->_defaults, $settings);
+		$this->settings[$model->alias] = Hash::merge($this->_defaults, $settings);
 	}
 
 	/**

@@ -37,7 +37,6 @@
  */
 
 App::uses('ModelBehavior', 'Model');
-App::uses('Set', 'Utility');
 App::uses('Folder', 'Utility');
 
 class CacheableBehavior extends ModelBehavior {
@@ -123,7 +122,7 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return void
 	 */
 	public function setup(Model $model, $settings = array()) {
-		$settings = Set::merge($this->_defaults, $settings);
+		$settings = Hash::merge($this->_defaults, $settings);
 
 		$this->settings[$model->alias] = $settings;
 

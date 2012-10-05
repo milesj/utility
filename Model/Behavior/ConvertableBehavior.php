@@ -92,9 +92,9 @@ class ConvertableBehavior extends ModelBehavior {
 					throw new InvalidArgumentException(sprintf('Engine option for %s has not been defined', $field));
 				}
 
-				$options = Set::merge($this->_defaults[$options['engine']], $options);
+				$options = Hash::merge($this->_defaults[$options['engine']], $options);
 
-				$this->settings[$model->alias][$field] = Set::merge(array(
+				$this->settings[$model->alias][$field] = Hash::merge(array(
 					'encode' => true,
 					'decode' => true,
 					'flatten' => true
