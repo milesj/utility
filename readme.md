@@ -1,4 +1,4 @@
-# Utility v1.0.0 RC1 #
+# Utility v1.0.0 RC2 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
@@ -20,6 +20,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 * Cacheable - Automatic database query caching
 * Convertable - Converts between types before and after database queries
 * Enumerable - Provides enumerable support for database columns
+* Filterable - Apply automatic filters and escaping to fields
 * Sluggable - Generate a slug based off another field
 * SpamBlocker - Validates comments against a point system and flags as spam
 * Validateable - Allows for multiple sets of validation rules
