@@ -356,6 +356,12 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return string
 	 */
 	public function cacheKey(Model $model, $keys, $prefix = true) {
+
+		// TranslateBehavior support
+		if (!empty($model->locale)) {
+			$keys = array_merge((array) $model->locale, (array) $keys);
+		}
+
 		if (is_array($keys)) {
 			$key = array_shift($keys);
 
