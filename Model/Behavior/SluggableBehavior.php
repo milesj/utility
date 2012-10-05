@@ -28,6 +28,13 @@ class SluggableBehavior extends ModelBehavior {
 	/**
 	 * Default settings.
 	 *
+	 * 	field		- The column to base the slug on
+	 * 	slug		- The column to write the slug to
+	 * 	scope		- Additional query conditions when finding duplicates
+	 * 	separator	- The separating character between words
+	 * 	length		- The max length of a slug
+	 * 	onUpdate	- Will update the slug when a record is updated
+	 *
 	 * @access protected
 	 * @var array
 	 */
@@ -98,6 +105,7 @@ class SluggableBehavior extends ModelBehavior {
 	 * @return string
 	 */
 	public function slugify(Model $model, $string) {
+		$string = strip_tags($string);
 		$string = str_replace('&amp;', 'and', $string);
 		$string = str_replace('&', 'and', $string);
 		$string = str_replace('@', 'at', $string);

@@ -40,15 +40,7 @@ class ConvertableBehavior extends ModelBehavior {
 	const FROM = 1;
 
 	/**
-	 * Mapping of Model fields and conversion settings.
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public $settings = array();
-
-	/**
-	 * Default settings per engine.
+	 * Default settings.
 	 *
 	 * @access protected
 	 * @var array
