@@ -28,6 +28,9 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 **Datasources**
 * Feed - RSS, RDF, Atom and XML parser through the model layer
 
+**Helpers**
+* Breadcrumb - Basic breadcrumb and sitemap generation
+
 **Shells**
 * CacheKill - Clear cache from the command line
 
