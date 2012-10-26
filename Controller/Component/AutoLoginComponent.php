@@ -4,7 +4,7 @@
  *
  * A CakePHP Component that will automatically login the Auth session for a duration if the user requested to (saves data to cookies).
  *
- * @version		3.6.0
+ * @version		3.6.1
  * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
@@ -217,8 +217,6 @@ class AutoLoginComponent extends Component {
 			return;
 		}
 
-		$model = $this->model;
-
 		if (is_array($this->Auth->loginAction)) {
 			if (!empty($this->Auth->loginAction['controller'])) {
 				$this->controller = $this->Auth->loginAction['controller'];
@@ -234,7 +232,7 @@ class AutoLoginComponent extends Component {
 		}
 
 		if (empty($this->controller)) {
-			$this->controller = Inflector::pluralize($model);
+			$this->controller = Inflector::pluralize($this->model);
 		}
 
 		// Is called after user login/logout validates, but before auth redirects
@@ -244,26 +242,47 @@ class AutoLoginComponent extends Component {
 
 			switch ($action) {
 				case $this->loginAction:
-					if (isset($data[$model])) {
-						$username = $data[$model][$this->username];
-						$password = $data[$model][$this->password];
-						$autoLogin = isset($data[$model]['auto_login']) ? $data[$model]['auto_login'] : !$this->requirePrompt;
-
-						if ($username && $password && $autoLogin) {
-							$this->write($username, $password);
-
-						} else if (!$autoLogin) {
-							$this->delete();
-						}
+					if (isset($data[$this->model])) {
+						$this->login($data[$this->model]);
 					}
 				break;
 
 				case $this->logoutAction:
-					$this->debug('logout', $this->Cookie, $this->Auth->user());
-					$this->delete();
+					$this->logout();
 				break;
 			}
 		}
+	}
+
+	/**
+	 * Login the user by storing their information in a cookie.
+	 *
+	 * @access public
+	 * @param array $data
+	 * @return void
+	 */
+	public function login($data) {
+		$username = $data[$this->username];
+		$password = $data[$this->password];
+		$autoLogin = isset($data['auto_login']) ? $data['auto_login'] : !$this->requirePrompt;
+
+		if ($username && $password && $autoLogin) {
+			$this->write($username, $password);
+
+		} else if (!$autoLogin) {
+			$this->delete();
+		}
+	}
+
+	/**
+	 * Logout the user by deleting the cookie.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function logout() {
+		$this->debug('logout', $this->Cookie, $this->Auth->user());
+		$this->delete();
 	}
 
 	/**
