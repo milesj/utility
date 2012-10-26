@@ -5,7 +5,7 @@
  * A class that handles the detection and conversion of certain resource formats / content types into other formats.
  * The current formats are supported: XML, JSON, Array, Object, Serialized
  *
- * @version		1.4
+ * @version		1.4.1
  * @author      Miles Johnson - http://milesj.me
  * @copyright   Copyright 2006-2011, Miles Johnson, Inc.
  * @license     http://opensource.org/licenses/mit-license.php - Licensed under The MIT License
@@ -408,7 +408,7 @@ class TypeConverter {
 						foreach ($node->attributes() as $attr => $value) {
 							$data['attributes'][$attr] = (string)$value;
 						}
-						break;
+					break;
 
 					case self::XML_MERGE:
 					case self::XML_OVERWRITE:
@@ -423,7 +423,7 @@ class TypeConverter {
 						foreach ($node->attributes() as $attr => $value) {
 							$data[$attr] = (string)$value;
 						}
-						break;
+					break;
 				}
 			}
 
