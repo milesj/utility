@@ -10,9 +10,9 @@
  * @link		http://milesj.me/code/cakephp/utility
  */
 
-App::uses('Model', 'Model');
+App::uses('AppModel', 'Model');
 
-class Aggregator extends Model {
+class Aggregator extends AppModel {
 
 	/**
 	 * No database table needed.

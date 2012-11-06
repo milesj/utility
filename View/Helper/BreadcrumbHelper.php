@@ -4,16 +4,25 @@
  *
  * A CakePHP Helper that provides basic functionality for generating breadcrumb lists.
  * Can be used to grab the first or last crumb, or generate a string of crumbs for use in page titles.
+ * Will also couple with the OpenGraphHelper for extra convenience.
  *
- * @version		1.0.0
+ * @version		1.1.0
  * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
 
-App::uses('Helper', 'View/Helper');
+App::uses('AppHelper', 'View/Helper');
 
-class BreadcrumbHelper extends Helper {
+class BreadcrumbHelper extends AppHelper {
+
+	/**
+	 * Helpers.
+	 *
+	 * @access public
+	 * @var array
+	 */
+	public $helpers = array('Utility.OpenGraph');
 
 	/**
 	 * List of breadcrumbs.
@@ -38,6 +47,9 @@ class BreadcrumbHelper extends Helper {
 			'url' => $url,
 			'options' => $options
 		);
+
+		$this->OpenGraph->title($this->pageTitle(null, array('reverse' => true)));
+		$this->OpenGraph->url($url);
 
 		return $this;
 	}
