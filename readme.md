@@ -1,4 +1,4 @@
-# Utility v1.0.0 #
+# Utility v1.1.0 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
@@ -30,6 +30,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 
 **Helpers**
 * Breadcrumb - Basic breadcrumb and sitemap generation
+* OpenGraph - Generate meta tags for the OpenGraph protocol
 
 **Shells**
 * CacheKill - Clear cache from the command line
