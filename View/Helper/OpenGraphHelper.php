@@ -49,7 +49,7 @@ class OpenGraphHelper extends AppHelper {
 		parent::__construct($View, $settings);
 
 		$this->type('website');
-		$this->url(null);
+		$this->uri(null);
 		$this->ns('og', 'http://ogp.me/ns#');
 		$this->ns('fb', 'http://ogp.me/ns/fb#');
 	}
@@ -152,8 +152,8 @@ class OpenGraphHelper extends AppHelper {
 	 * @param string $ns
 	 * @return OpenGraphHelper
 	 */
-	public function url($value, $ns = 'og') {
-		$this->tag($ns . ':url', h(Router::url($value, true)));
+	public function uri($value, $ns = 'og') {
+		$this->tag($ns . ':url', Router::url($value, true));
 
 		return $this;
 	}
@@ -181,7 +181,16 @@ class OpenGraphHelper extends AppHelper {
 	 * @return OpenGraphHelper
 	 */
 	public function locale($value, $ns = 'og') {
-		$value = (array) $value;
+		$value = array_unique((array) $value);
+
+		foreach ($value as &$v) {
+			if (strpos('-', $v) >= 0) {
+				list($l, $r) = explode('-', $v);
+
+				$v = strtolower($l) . '_' . strtoupper($r);
+			}
+		}
+
 		$locale = array_shift($value);
 		$options = array();
 
@@ -309,6 +318,17 @@ class OpenGraphHelper extends AppHelper {
 		}
 
 		return $this->_View->fetch('openGraph');
+	}
+
+	/**
+	 * Check to see if a field is set.
+	 *
+	 * @access public
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function has($key) {
+		return isset($this->_tags[$key]);
 	}
 
 }
