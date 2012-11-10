@@ -4,7 +4,7 @@
  *
  * Generates meta tags for the OpenGraph protocol. Tags can also be generated when calling BreadcrumbHelper::add().
  *
- * @version		1.1.0
+ * @version		1.1.1
  * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
@@ -184,7 +184,7 @@ class OpenGraphHelper extends AppHelper {
 		$value = array_unique((array) $value);
 
 		foreach ($value as &$v) {
-			if (strpos('-', $v) >= 0) {
+			if (strpos($v, '-') !== false) {
 				list($l, $r) = explode('-', $v);
 
 				$v = strtolower($l) . '_' . strtoupper($r);
@@ -261,7 +261,7 @@ class OpenGraphHelper extends AppHelper {
 	 * @return OpenGraphHelper
 	 */
 	public function ns($key, $url) {
-		if (strpos($key, 'xmlns:') !== 0) {
+		if (strpos($key, 'xmlns') !== 0) {
 			$key = 'xmlns:' . $key;
 		}
 

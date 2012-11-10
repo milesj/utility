@@ -9,7 +9,7 @@
  *		public $feed = array('datasource' => 'Utility.FeedSource');
  * }}}
  *
- * @version		3.0.1
+ * @version		3.0.2
  * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
@@ -85,9 +85,10 @@ class FeedSource extends DataSource {
 	 * @access public
 	 * @param Model $model
 	 * @param array $queryData
+	 * @param int $recursive
 	 * @return array
 	 */
-	public function read(Model $model, $queryData = array()) {
+	public function read(Model $model, $queryData = array(), $recursive = null) {
 		$query = $queryData;
 		$defaults = array(
 			'root' => '',
@@ -334,7 +335,7 @@ class FeedSource extends DataSource {
 	 * @return array
 	 */
 	protected function _truncate($feed, $count = null) {
-		if (empty($feed)) {
+		if (!$feed) {
 			return $feed;
 		}
 
