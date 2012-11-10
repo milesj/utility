@@ -156,6 +156,10 @@ class AutoLoginComponent extends Component {
 	 * @return void
 	 */
 	public function startup(Controller $controller) {
+		if ($controller instanceof CakeErrorController) {
+			return;
+		}
+
 		// Backwards support
 		if (isset($this->settings)) {
 			$this->_set($this->settings);
