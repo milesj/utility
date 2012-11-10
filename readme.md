@@ -13,6 +13,9 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 * AjaxHandler - Provides support for AJAX request and response
 * AutoLogin - An auth auto-login and persistent remember me
 
+**Controllers**
+* Sitemap - Generates a sitemap.xml for search engines
+
 **Models**
 * Aggregator - Convenience model that uses the FeedSource
 
