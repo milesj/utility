@@ -33,8 +33,8 @@ class SitemapController extends Controller {
 		foreach ($controllers as $controller) {
 			App::uses($controller, 'Controller');
 
-			// Don't load AppController's or Controller's who can't be found
-			if (strpos($controller, 'AppController') !== false || !App::load($controller)) {
+			// Don't load AppController's, SitemapController or Controller's who can't be found
+			if (strpos($controller, 'AppController') !== false || $controller === 'SitemapController' || !App::load($controller)) {
 				continue;
 			}
 

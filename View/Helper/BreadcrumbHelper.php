@@ -49,7 +49,7 @@ class BreadcrumbHelper extends AppHelper {
 		);
 
 		$this->OpenGraph->title($this->pageTitle(null, array('reverse' => true)));
-		$this->OpenGraph->url($url);
+		$this->OpenGraph->uri($url);
 
 		return $this;
 	}
