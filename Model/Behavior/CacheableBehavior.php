@@ -289,18 +289,18 @@ class CacheableBehavior extends ModelBehavior {
 
 		// Use slug if that's the primary
 		if ($model->primaryKey === 'slug') {
-			$key = $settings['methodKeys']['getBySlug'];
+			$method = $settings['methodKeys']['getBySlug'];
 		} else {
-			$key = $settings['methodKeys']['getById'];
+			$method = $settings['methodKeys']['getById'];
 		}
 
 		// Refresh the cache during update/create
-		if ($id && $key && (($created && $events['onCreate']) || (!$created && $events['onUpdate']))) {
-			$cacheKey = array($model->alias . '::' . $key, $id);
+		if ($id && $method && (($created && $events['onCreate']) || (!$created && $events['onUpdate']))) {
+			$cacheKey = array($model->alias . '::' . $method, $id);
 
-			if (method_exists($model, $key)) {
+			if (method_exists($model, $method)) {
 				$this->deleteCache($model, $cacheKey);
-				call_user_func(array($model, $key), $id);
+				call_user_func(array($model, $method), $id);
 
 			} else {
 				$this->writeCache($model, $cacheKey, array($model->read(null, $id)));
