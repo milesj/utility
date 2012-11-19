@@ -59,11 +59,11 @@ class SitemapController extends Controller {
 				}
 
 				if (isset($item['lastmod'])) {
-					$item['lastmod'] = CakeTime::format('Y-m-d', $item['lastmod']);
-				}
-
-				if (isset($item['title'])) {
-					$item['title'] = h($item['title']);
+					if (empty($item['lastmod'])) {
+						unset($item['lastmod']);
+					} else {
+						$item['lastmod'] = CakeTime::format(DateTime::W3C, $item['lastmod']);
+					}
 				}
 			}
 		}

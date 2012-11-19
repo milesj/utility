@@ -1,15 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-	<?php // Render without XmlEngine as we need the namespace in urlset
-	if ($sitemap) {
-		foreach ($sitemap as $item) {
-			echo '<url>';
+<?php
+// Render without XmlEngine as we need the namespace in urlset
+// Also use echo because <? short tags will explode if enabled
 
-			foreach ($item as $key => $value) {
-				echo sprintf('<%s>%s</%s>', $key, $value, $key);
-			}
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-			echo '</url>';
+if ($sitemap) {
+	foreach ($sitemap as $item) {
+		echo '<url>';
+
+		foreach ($item as $key => $value) {
+			echo sprintf('<%s>%s</%s>', $key, $value, $key);
 		}
-	} ?>
-</urlset>
+
+		echo '</url>';
+	}
+}
+
+echo '</urlset>';
