@@ -284,14 +284,30 @@ class CacheableBehavior extends ModelBehavior {
 	 */
 	public function afterSave(Model $model, $created = true) {
 		$id = $model->id;
-		$key = $this->settings[$model->alias]['methodKeys']['getById'];
-		$events = $this->settings[$model->alias]['events'];
+		$settings = $this->settings[$model->alias];
+		$events = $settings['events'];
 
-		if ($id && $key && (($created && $events['onCreate']) || (!$created && $events['onUpdate']))) {
-			$this->writeCache($model, array($model->alias . '::' . $key, $id), array($model->read(null, $id)));
+		// Use slug if that's the primary
+		if ($model->primaryKey === 'slug') {
+			$key = $settings['methodKeys']['getBySlug'];
+		} else {
+			$key = $settings['methodKeys']['getById'];
 		}
 
-		if ($getList = $this->settings[$model->alias]['methodKeys']['getList']) {
+		// Refresh the cache during update/create
+		if ($id && $key && (($created && $events['onCreate']) || (!$created && $events['onUpdate']))) {
+			$cacheKey = array($model->alias . '::' . $key, $id);
+
+			if (method_exists($model, $key)) {
+				$this->deleteCache($model, $cacheKey);
+				call_user_func(array($model, $key), $id);
+
+			} else {
+				$this->writeCache($model, $cacheKey, array($model->read(null, $id)));
+			}
+		}
+
+		if ($getList = $settings['methodKeys']['getList']) {
 			$this->deleteCache($model, array($model->alias . '::' . $getList));
 		}
 
@@ -398,8 +414,8 @@ class CacheableBehavior extends ModelBehavior {
 	 */
 	public function getExpiration(Model $model, $expires = null) {
 		if (!$expires) {
-			if ($this->settings[$model->alias]['expires']) {
-				$expires = $this->settings[$model->alias]['expires'];
+			if ($time = $this->settings[$model->alias]['expires']) {
+				$expires = $time;
 			} else {
 				$expires = '+5 minutes';
 			}
