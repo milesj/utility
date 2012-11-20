@@ -58,8 +58,8 @@ class SitemapController extends Controller {
 					$item['loc'] = h(Router::url($item['loc'], true));
 				}
 
-				if (isset($item['lastmod'])) {
-					if (empty($item['lastmod'])) {
+				if (array_key_exists('lastmod', $item)) {
+					if (!$item['lastmod']) {
 						unset($item['lastmod']);
 					} else {
 						$item['lastmod'] = CakeTime::format(DateTime::W3C, $item['lastmod']);
