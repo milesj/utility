@@ -325,10 +325,11 @@ class OpenGraphHelper extends AppHelper {
 	 *
 	 * @access public
 	 * @param string $key
+	 * @param string $ns
 	 * @return boolean
 	 */
-	public function has($key) {
-		return isset($this->_tags[$key]);
+	public function has($key, $ns = 'og') {
+		return isset($this->_tags[$ns . ':' . $key]);
 	}
 
 }
