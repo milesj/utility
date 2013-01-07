@@ -1,11 +1,12 @@
-# Utility v1.2.2 #
+# Utility v1.3.0-rc1 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
 ## Requirements ##
 
-* PHP 5.2, 5.3
-* CakePHP 2.x
+* PHP 5.3
+* CakePHP 2
+* Composer
 
 ## Libraries ##
 
@@ -34,6 +35,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 **Helpers**
 * Breadcrumb - Basic breadcrumb and sitemap generation
 * OpenGraph - Generate meta tags for the OpenGraph protocol
+* Decoda - BBcode markup parsing with the Decoda library
 
 **Shells**
 * CacheKill - Clear cache from the command line
