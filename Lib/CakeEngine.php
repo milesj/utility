@@ -63,7 +63,7 @@ class CakeEngine extends AbstractEngine {
 
 		// Else fallback to the plugin templates
 		} catch (Exception $e) {
-			$this->_view->plugin = 'Decoda';
+			$this->_view->plugin = 'Utility';
 
 			$response = $this->_view->render($setup['template']);
 		}
