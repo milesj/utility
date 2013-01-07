@@ -1,0 +1,13 @@
+/**
+ * Decoda
+ * A lightweight textarea editor with toolbar functionality for the Decoda markup language.
+ *
+ * @copyright	2013
+ * @link		http://milesj.me/code/mootools/decoda
+ * @license		MIT
+ * @authors		Miles Johnson <http://milesj.me>
+ * @package		css/ie
+ */
+
+/* css/decoda-ie.css */
+.decoda-toolbars .decoda-menu{background:#fff;border:1px solid #cccccc}.decoda-toolbars .decoda-toolbar li:hover .decoda-menu{display:block}
