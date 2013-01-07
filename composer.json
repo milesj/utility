@@ -5,7 +5,7 @@
 	"keywords": [
 		"cakephp", "utility", "plugin", "controller", "component", "model", "behavior", "datasource", "shell", "helper",
 		"auto-login", "ajax-handler", "cacheable", "convertable", "enumerable", "spam-blocker", "validateable", "cache-kill",
-		"feed", "sluggable", "aggregator", "filterable", "open-graph", "sitemap"
+		"feed", "sluggable", "aggregator", "filterable", "open-graph", "sitemap", "bbcode", "decoda", "markup"
 	],
 	"homepage": "http://milesj.me/code/cakephp/utility",
 	"license": "MIT",
@@ -16,8 +16,9 @@
 		}
 	],
 	"require": {
-		"php": ">=5.2",
-		"composer/installers": "*"
+		"php": ">=5.3",
+		"composer/installers": "*",
+		"mjohnson/decoda": "5.*"
 	},
 	"support": {
 		"source": "https://github.com/milesj/cake-utility"
