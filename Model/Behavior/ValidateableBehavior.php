@@ -1,7 +1,13 @@
 <?php
 /**
- * ValidateableBehavior
- *
+ * @copyright	Copyright 2006-2013, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
+ * @link		http://milesj.me/code/cakephp/utility
+ */
+
+App::uses('ModelBehavior', 'Model');
+
+/**
  * A CakePHP Behavior that allows for multiple validation sets to exist,
  * and the ability to toggle which set should be used for validation before each Model::save().
  * Simply define Model::$validations and call Model::validate('setName') before a save.
@@ -23,15 +29,7 @@
  * 			}
  *		}
  * }}}
- *
- * @version		1.0.0
- * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
- * @link		http://milesj.me/code/cakephp/utility
  */
-
-App::uses('ModelBehavior', 'Model');
-
 class ValidateableBehavior extends ModelBehavior {
 
 	/**

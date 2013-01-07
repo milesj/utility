@@ -1,7 +1,13 @@
 <?php
 /**
- * ConvertableBehavior
- *
+ * @copyright	Copyright 2006-2013, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
+ * @link		http://milesj.me/code/cakephp/utility
+ */
+
+App::uses('ModelBehavior', 'Model');
+
+/**
  * A CakePHP Behavior that converts a field into a specific type before an insert or update,
  * and then converts the field back to its original type when the record is retrieved.
  *
@@ -22,15 +28,7 @@
  * 			);
  *		}
  * }}}
- *
- * @version		1.0.0
- * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
- * @link		http://milesj.me/code/cakephp/utility
  */
-
-App::uses('ModelBehavior', 'Model');
-
 class ConvertableBehavior extends ModelBehavior {
 
 	/**

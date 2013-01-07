@@ -1,7 +1,13 @@
 <?php
 /**
- * FilterableBehavior
- *
+ * @copyright	Copyright 2006-2013, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
+ * @link		http://milesj.me/code/cakephp/utility
+ */
+
+App::uses('ModelBehavior', 'Model');
+
+/**
  * A CakePHP Behavior that will run sanitization filters on specific fields during an insert or update.
  * The currently supported filters are: html escaping, sql escaping, strip tags, paranoid.
  *
@@ -19,15 +25,7 @@
  * 			);
  *		}
  * }}}
- *
- * @version		1.0.0
- * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
- * @link		http://milesj.me/code/cakephp/utility
  */
-
-App::uses('ModelBehavior', 'Model');
-
 class FilterableBehavior extends ModelBehavior {
 
 	/**

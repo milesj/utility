@@ -1,11 +1,6 @@
 <?php
 /**
- * AjaxHandlerComponent
- *
- * A CakePHP Component that will automatically handle and render AJAX calls and apply the appropriate returned format and headers.
- *
- * @version		2.0.1
- * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
+ * @copyright	Copyright 2006-2013, Miles Johnson - http://milesj.me
  * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
  * @link		http://milesj.me/code/cakephp/utility
  */
@@ -13,6 +8,9 @@
 App::uses('Component', 'Controller');
 App::import('Vendor', 'Utility.TypeConverter');
 
+/**
+ * A CakePHP Component that will automatically handle and render AJAX calls and apply the appropriate returned format and headers.
+ */
 class AjaxHandlerComponent extends Component {
 
 	/**

@@ -1,7 +1,13 @@
 <?php
 /**
- * SpamBlockerBehavior
- *
+ * @copyright	Copyright 2006-2013, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
+ * @link		http://milesj.me/code/cakephp/utility
+ */
+
+App::uses('ModelBehavior', 'Model');
+
+/**
  * A CakePHP Behavior that moderates and validates comments to check for spam.
  * Validation is based on a point system where high points equal an automatic approval and low points are marked as spam or deleted.
  *
@@ -22,16 +28,7 @@
  *			INDEX (`article_id`)
  *		) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
  * }}}
- *
- * @version		3.0.0
- * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
- * @link		http://milesj.me/code/cakephp/utility
- * @link        http://snook.ca/archives/other/effective_blog_comment_spam_blocker/
  */
-
-App::uses('ModelBehavior', 'Model');
-
 class SpamBlockerBehavior extends ModelBehavior {
 
 	/**

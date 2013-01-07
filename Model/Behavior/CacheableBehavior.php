@@ -1,7 +1,14 @@
 <?php
 /**
- * CacheableBehavior
- *
+ * @copyright	Copyright 2006-2013, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
+ * @link		http://milesj.me/code/cakephp/utility
+ */
+
+App::uses('ModelBehavior', 'Model');
+App::uses('Folder', 'Utility');
+
+/**
  * A CakePHP Behavior that will automatically read, write and delete cache for Model database queries.
  * When Model::find() is called and the cache parameter is passed, the data will be written.
  * When Model::create() or Model::update() is called, the cache key with the associated Model::$id will be written.
@@ -29,16 +36,7 @@
  * 			}
  * 		}
  * }}}
- *
- * @version		1.0.1
- * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
- * @link		http://milesj.me/code/cakephp/utility
  */
-
-App::uses('ModelBehavior', 'Model');
-App::uses('Folder', 'Utility');
-
 class CacheableBehavior extends ModelBehavior {
 
 	/**

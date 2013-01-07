@@ -1,7 +1,13 @@
 <?php
 /**
- * SluggableBehavior
- *
+ * @copyright	Copyright 2006-2013, Miles Johnson - http://milesj.me
+ * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
+ * @link		http://milesj.me/code/cakephp/utility
+ */
+
+App::uses('ModelBehavior', 'Model');
+
+/**
  * A CakePHP behavior that will generate a slug based off of another field before an insert or update query.
  *
  * {{{
@@ -14,15 +20,7 @@
  *			);
  * 		}
  * }}}
- *
- * @version		1.0.0
- * @copyright	Copyright 2006-2012, Miles Johnson - http://milesj.me
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
- * @link		http://milesj.me/code/cakephp/utility
  */
-
-App::uses('ModelBehavior', 'Model');
-
 class SluggableBehavior extends ModelBehavior {
 
 	/**
