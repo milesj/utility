@@ -11,12 +11,12 @@
  * @link		http://milesj.me/code/cakephp/decoda
  */
 
-App::uses('CakeEngine', 'Decoda.Lib');
+App::uses('CakeEngine', 'Utility.Lib');
 
-App::import('Vendor', 'Decoda', array(
-	'file' => 'mjohnson/decoda/mjohnson/decoda/Decoda.php'
-));
-
+/**
+ * A lightweight lexical string parser for simple markup syntax, ported to CakePHP.
+ * Provides a very powerful filter and hook system to extend the parsing cycle.
+ */
 class DecodaHelper extends AppHelper {
 
 	/**
@@ -31,7 +31,7 @@ class DecodaHelper extends AppHelper {
 	 * Decoda instance.
 	 *
 	 * @access protected
-	 * @var \mjohnson\decoda\Decoda
+	 * @var \Decoda\Decoda
 	 */
 	protected $_decoda;
 
@@ -57,6 +57,7 @@ class DecodaHelper extends AppHelper {
 			'maxNewlines' => 3,
 			'paths' => array(),
 			'whitelist' => array(),
+			'blacklist' => array(),
 			'helpers' => array('Time', 'Html', 'Text')
 		);
 
@@ -79,8 +80,11 @@ class DecodaHelper extends AppHelper {
 
 		unset($settings['locale']);
 
-		$this->_decoda = new \mjohnson\decoda\Decoda('', $settings);
-		$this->_decoda->whitelist($settings['whitelist'])->defaults();
+		$this->_decoda = new \Decoda\Decoda('', $settings);
+		$this->_decoda
+			->whitelist($settings['whitelist'])
+			->blacklist($settings['blacklist'])
+			->defaults();
 
 		if (isset($localeMap[$locale])) {
 			$this->_decoda->setLocale($localeMap[$locale]);
@@ -96,7 +100,7 @@ class DecodaHelper extends AppHelper {
 		}
 
 		// Custom config
-		$this->_decoda->addHook( new \mjohnson\decoda\hooks\EmoticonHook(array('path' => '/decoda/img/')) );
+		$this->_decoda->addHook( new \Decoda\Hook\EmoticonHook(array('path' => '/utility/img/emoticon/')) );
 		$this->_decoda->setEngine( new CakeEngine($settings['helpers']) );
 	}
 

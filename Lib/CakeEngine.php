@@ -11,10 +11,12 @@
 
 App::uses('View', 'View');
 
-use mjohnson\decoda\Decoda;
-use mjohnson\decoda\engines\EngineAbstract;
+use Decoda\Engine\AbstractEngine;
 
-class CakeEngine extends EngineAbstract {
+/**
+ * Renders Decoda templates using CakePHP's View engine.
+ */
+class CakeEngine extends AbstractEngine {
 
 	/**
 	 * CakePHP View engine.
