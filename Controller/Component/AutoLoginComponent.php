@@ -15,7 +15,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Components.
 	 *
-	 * @access public
 	 * @var array
 	 */
 	public $components = array('Auth', 'Cookie');
@@ -23,7 +22,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Name of the user model.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $model = 'User';
@@ -31,7 +29,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Field name for login username.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $username = 'username';
@@ -39,7 +36,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Field name for login password.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $password = 'password';
@@ -47,7 +43,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Plugin name if component is placed within a plugin.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $plugin = '';
@@ -55,7 +50,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Users login/logout controller.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $controller = 'users';
@@ -63,7 +57,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Users login action.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $loginAction = 'login';
@@ -71,7 +64,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Users logout controller.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $logoutAction = 'logout';
@@ -79,7 +71,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Name of the auto login cookie.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $cookieName = 'autoLogin';
@@ -87,7 +78,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Duration in cookie length, using strtotime() format.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $expires = '+2 weeks';
@@ -95,7 +85,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Domain used on a local environment (localhost).
 	 *
-	 * @access public
 	 * @var boolean
 	 */
 	public $cookieLocalDomain = false;
@@ -103,7 +92,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Force a redirect after successful auto login.
 	 *
-	 * @access public
 	 * @var boolean
 	 */
 	public $redirect = true;
@@ -111,7 +99,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * If true, will require a checkbox value in the login form data.
 	 *
-	 * @access public
 	 * @var boolean
 	 */
 	public $requirePrompt = true;
@@ -119,7 +106,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Force the process to continue or exit.
 	 *
-	 * @access public
 	 * @var boolean
 	 */
 	public $active = true;
@@ -127,7 +113,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Should we debug?
 	 *
-	 * @access protected
 	 * @var boolean
 	 */
 	protected $_debug = false;
@@ -135,7 +120,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Initialize settings and debug.
 	 *
-	 * @access public
 	 * @param Controller $controller
 	 * @return void
 	 */
@@ -149,7 +133,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Automatically login existent Auth session; called after controllers beforeFilter() so that Auth is initialized.
 	 *
-	 * @access public
 	 * @param Controller $controller
 	 * @return void
 	 */
@@ -207,7 +190,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Automatically process logic when hitting login/logout actions.
 	 *
-	 * @access public
 	 * @param Controller $controller
 	 * @param string $url
 	 * @param int $status
@@ -259,7 +241,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Login the user by storing their information in a cookie.
 	 *
-	 * @access public
 	 * @param array $data
 	 * @return void
 	 */
@@ -279,7 +260,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Logout the user by deleting the cookie.
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function logout() {
@@ -290,7 +270,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Read the AutoLogin cookie and base64_decode().
 	 *
-	 * @access public
 	 * @return array|null
 	 */
 	public function read() {
@@ -314,7 +293,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Remember the user information.
 	 *
-	 * @access public
 	 * @param string $username
 	 * @param string $password
 	 * @return void
@@ -339,7 +317,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Delete the cookie.
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function delete() {
@@ -349,7 +326,6 @@ class AutoLoginComponent extends Component {
 	/**
 	 * Debug the current auth and cookies.
 	 *
-	 * @access public
 	 * @param string $key
 	 * @param array $cookie
 	 * @param array $user

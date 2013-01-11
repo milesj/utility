@@ -24,7 +24,6 @@ class FeedSource extends DataSource {
 	/**
 	 * The processed feeds in array format.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_feeds = array();
@@ -32,7 +31,6 @@ class FeedSource extends DataSource {
 	/**
 	 * Apply the cache settings.
 	 *
-	 * @access public
 	 * @param array $config
 	 */
 	public function __construct($config = array()) {
@@ -59,7 +57,6 @@ class FeedSource extends DataSource {
 	/**
 	 * Describe the supported feeds.
 	 *
-	 * @access public
 	 * @param Model|string $model
 	 * @return array
 	 */
@@ -70,7 +67,6 @@ class FeedSource extends DataSource {
 	/**
 	 * Return a list of aggregated feed URLs.
 	 *
-	 * @access public
 	 * @param array $data
 	 * @return array
 	 */
@@ -81,7 +77,6 @@ class FeedSource extends DataSource {
 	/**
 	 * Grab the feeds through an HTTP request and parse it into an array.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $queryData
 	 * @param int $recursive
@@ -185,7 +180,6 @@ class FeedSource extends DataSource {
 	/**
 	 * Extracts a certain value from a node.
 	 *
-	 * @access protected
 	 * @param string $item
 	 * @param array $keys
 	 * @return string
@@ -213,7 +207,6 @@ class FeedSource extends DataSource {
 	/**
 	 * Processes the feed and rebuilds an array based on the feeds type (RSS, RDF, Atom).
 	 *
-	 * @access protected
 	 * @param HttpResponse $response
 	 * @param array $query
 	 * @param string $source
@@ -328,7 +321,6 @@ class FeedSource extends DataSource {
 	/**
 	 * Truncates the feed to a certain length.
 	 *
-	 * @access protected
 	 * @param array $feed
 	 * @param int $count
 	 * @return array

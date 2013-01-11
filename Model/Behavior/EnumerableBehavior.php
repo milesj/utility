@@ -51,7 +51,6 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * Persist the value in the response by appending a new field named <field><suffix>.
 	 *
-	 * @access public
 	 * @var array
 	 */
 	public $persist = true;
@@ -59,7 +58,6 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * Should we replace all enum fields with the respective mapped value.
 	 *
-	 * @access public
 	 * @var boolean
 	 */
 	public $format = self::REPLACE;
@@ -67,7 +65,6 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * Toggle the replacing of raw values with enum values when a record is being updated (checks Model::$id).
 	 *
-	 * @access public
 	 * @var boolean
 	 */
 	public $onUpdate = false;
@@ -75,7 +72,6 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * The suffix to append to the persisted value.
 	 *
-	 * @access public
 	 * @var string
 	 */
 	public $suffix = '_enum';
@@ -83,7 +79,6 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * The enums for all models.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_enums = array();
@@ -91,7 +86,6 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * Store the settings and Model::$enum.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $settings
 	 * @throws InvalidArgumentException
@@ -119,7 +113,6 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * Helper method for grabbing and filtering the enum from the model.
 	 *
-	 * @access public
 	 * @param Model|string $model
 	 * @param string $key
 	 * @param mixed $value
@@ -154,7 +147,6 @@ class EnumerableBehavior extends ModelBehavior {
 	 * Generate select options based on the enum fields which will be used for form input auto-magic.
 	 * If a Controller is passed, it will auto-set the data to the views.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param Controller|null $controller
 	 * @return array
@@ -180,7 +172,6 @@ class EnumerableBehavior extends ModelBehavior {
 	/**
 	 * Format the results by replacing all enum fields with their respective value replacement.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $results
 	 * @param boolean $primary

@@ -15,7 +15,6 @@ class Aggregator extends AppModel {
 	/**
 	 * No database table needed.
 	 *
-	 * @access public
 	 * @var boolean
 	 */
 	public $useTable = false;
@@ -23,7 +22,6 @@ class Aggregator extends AppModel {
 	/**
 	 * Use FeedSource.
 	 *
-	 * @access public
 	 * @var boolean
 	 */
 	public $useDbConfig = 'feed';
@@ -32,7 +30,6 @@ class Aggregator extends AppModel {
 	 * Overwrite the find method to be specific for feed aggregation.
 	 * Set the default settings and prepare the URLs.
 	 *
-	 * @access public
 	 * @param string $type
 	 * @param array $query
 	 * @return array
@@ -55,7 +52,6 @@ class Aggregator extends AppModel {
 	/**
 	 * Format the date a certain way.
 	 *
-	 * @access public
 	 * @param array $results
 	 * @param boolean $primary
 	 * @return array

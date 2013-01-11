@@ -17,7 +17,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Components.
 	 *
-	 * @access public
 	 * @var array
 	 */
 	public $components = array('RequestHandler');
@@ -25,7 +24,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Controller instance.
 	 *
-	 * @access public
 	 * @var Controller
 	 */
 	public $controller;
@@ -33,7 +31,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Should we allow remote AJAX calls.
 	 *
-	 * @access public
 	 * @var boolean
 	 */
 	public $allowRemote = false;
@@ -41,7 +38,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * A user given code associated with failure / success messages.
 	 *
-	 * @access protected
 	 * @var int
 	 */
 	protected $_code;
@@ -49,7 +45,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Contains the success messages / errors.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_data;
@@ -57,7 +52,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Which actions are handled as AJAX.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_handled = array();
@@ -65,7 +59,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Determines if the AJAX call was a success or failure.
 	 *
-	 * @access protected
 	 * @var boolean
 	 */
 	protected $_success = false;
@@ -73,7 +66,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Load the Controller object.
 	 *
-	 * @access public
 	 * @param Controller $controller
 	 * @return void
 	 */
@@ -103,7 +95,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Determine if the action is an AJAX action and handle it.
 	 *
-	 * @access public
 	 * @param Controller $controller
 	 * @return void
 	 */
@@ -124,7 +115,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * A list of actions that are handled as an AJAX call.
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function handle() {
@@ -140,7 +130,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Respond the AJAX call with the gathered data.
 	 *
-	 * @access public
 	 * @param string $type
 	 * @param array $response
 	 * @return void
@@ -171,7 +160,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Handle the response as a success or failure alongside a message or error.
 	 *
-	 * @access public
 	 * @param boolean $success
 	 * @param mixed $data
 	 * @param mixed $code
@@ -186,7 +174,6 @@ class AjaxHandlerComponent extends Component {
 	/**
 	 * Format the response into the right content type.
 	 *
-	 * @access protected
 	 * @param string $type
 	 * @return string
 	 */

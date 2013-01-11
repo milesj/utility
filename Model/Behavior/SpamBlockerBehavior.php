@@ -47,7 +47,6 @@ class SpamBlockerBehavior extends ModelBehavior {
 	 *	columnMap		- Names for table columns within the comments table and the parent
 	 * 	statusMap		- Status codes for the enum (or integer) status column
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_defaults = array(
@@ -88,7 +87,6 @@ class SpamBlockerBehavior extends ModelBehavior {
 	/**
 	 * Merge settings.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $settings
 	 * @return void
@@ -100,7 +98,6 @@ class SpamBlockerBehavior extends ModelBehavior {
 	/**
 	 * Runs before a save and marks the content as spam or regular comment.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @return boolean
 	 */
@@ -294,7 +291,6 @@ class SpamBlockerBehavior extends ModelBehavior {
 	/**
 	 * Sends out an email notifying you of a new comment.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $data
 	 * @param array $status

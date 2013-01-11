@@ -17,7 +17,6 @@ class DecodaHelper extends AppHelper {
 	/**
 	 * Helpers.
 	 *
-	 * @access public
 	 * @var array
 	 */
 	public $helpers = array('Html');
@@ -25,7 +24,6 @@ class DecodaHelper extends AppHelper {
 	/**
 	 * Decoda instance.
 	 *
-	 * @access protected
 	 * @var \Decoda\Decoda
 	 */
 	protected $_decoda;
@@ -33,7 +31,6 @@ class DecodaHelper extends AppHelper {
 	/**
 	 * Instantiate the class and apply settings.
 	 *
-	 * @access public
 	 * @param View $view
 	 * @param array $settings
 	 */
@@ -102,7 +99,6 @@ class DecodaHelper extends AppHelper {
 	/**
 	 * Execute setupDecoda() if it exists. This allows for custom filters and hooks to be applied.
 	 *
-	 * @access public
 	 * @param string $viewFile
 	 * @return void
 	 */
@@ -115,7 +111,6 @@ class DecodaHelper extends AppHelper {
 	/**
 	 * Reset the Decoda instance, apply any whitelisted tags and executes the parsing process.
 	 *
-	 * @access public
 	 * @param string $string
 	 * @param array $whitelist
 	 * @param boolean $disable
@@ -130,7 +125,6 @@ class DecodaHelper extends AppHelper {
 	/**
 	 * Reset the Decoda instance and strip out any Decoda tags and HTML.
 	 *
-	 * @access public
 	 * @param string $string
 	 * @param boolean $html
 	 * @return string

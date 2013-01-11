@@ -17,7 +17,6 @@ class BreadcrumbHelper extends AppHelper {
 	/**
 	 * Helpers.
 	 *
-	 * @access public
 	 * @var array
 	 */
 	public $helpers = array('Utility.OpenGraph');
@@ -25,7 +24,6 @@ class BreadcrumbHelper extends AppHelper {
 	/**
 	 * List of breadcrumbs.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_crumbs = array();
@@ -33,7 +31,6 @@ class BreadcrumbHelper extends AppHelper {
 	/**
 	 * Add a breadcrumb to the list.
 	 *
-	 * @access public
 	 * @param string $title
 	 * @param string|array $url
 	 * @param array $options
@@ -55,7 +52,6 @@ class BreadcrumbHelper extends AppHelper {
 	/**
 	 * Return the list of breadcrumbs.
 	 *
-	 * @access public
 	 * @param string $key
 	 * @return array
 	 */
@@ -76,7 +72,6 @@ class BreadcrumbHelper extends AppHelper {
 	/**
 	 * Return the first crumb in the list.
 	 *
-	 * @access public
 	 * @param string $key
 	 * @return mixed
 	 */
@@ -95,7 +90,6 @@ class BreadcrumbHelper extends AppHelper {
 	/**
 	 * Return the last crumb in the list.
 	 *
-	 * @access public
 	 * @param string $key
 	 * @return mixed
 	 */
@@ -114,7 +108,6 @@ class BreadcrumbHelper extends AppHelper {
 	/**
 	 * Generate a page title based off the current crumbs.
 	 *
-	 * @access public
 	 * @param string $base
 	 * @param array $options
 	 * @return string

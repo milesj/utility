@@ -17,7 +17,6 @@ class CakeEngine extends AbstractEngine {
 	/**
 	 * CakePHP View engine.
 	 *
-	 * @access protected
 	 * @var View
 	 */
 	protected $_view;
@@ -25,7 +24,6 @@ class CakeEngine extends AbstractEngine {
 	/**
 	 * Initialize View and helpers.
 	 *
-	 * @access public
 	 * @param array $helpers
 	 */
 	public function __construct(array $helpers) {
@@ -42,7 +40,6 @@ class CakeEngine extends AbstractEngine {
 	/**
 	 * Renders the tag by using Cake views.
 	 *
-	 * @access public
 	 * @param array $tag
 	 * @param string $content
 	 * @return string

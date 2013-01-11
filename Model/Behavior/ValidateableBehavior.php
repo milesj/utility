@@ -38,7 +38,6 @@ class ValidateableBehavior extends ModelBehavior {
 	 * 	defaultSet	- The default validation set to use if none defined
 	 * 	resetAfter	- Should Model::$validate be reset after validation
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_defaults = array(
@@ -49,7 +48,6 @@ class ValidateableBehavior extends ModelBehavior {
 	/**
 	 * Merge settings.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $settings
 	 */
@@ -60,7 +58,6 @@ class ValidateableBehavior extends ModelBehavior {
 	/**
 	 * Set the validation set to use.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param string $set
 	 * @return Model
@@ -79,7 +76,6 @@ class ValidateableBehavior extends ModelBehavior {
 	/**
 	 * If validate is empty and a default set exists, apply the rules.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @return boolean
 	 */
@@ -96,7 +92,6 @@ class ValidateableBehavior extends ModelBehavior {
 	/**
 	 * Reset Model::$validate after validation.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @return boolean
 	 */

@@ -33,7 +33,6 @@ class SluggableBehavior extends ModelBehavior {
 	 * 	length		- The max length of a slug
 	 * 	onUpdate	- Will update the slug when a record is updated
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_defaults = array(
@@ -48,7 +47,6 @@ class SluggableBehavior extends ModelBehavior {
 	/**
 	 * Merge settings.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $settings
 	 */
@@ -59,7 +57,6 @@ class SluggableBehavior extends ModelBehavior {
 	/**
 	 * Generate a slug based on another field.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @return boolean
 	 */
@@ -97,7 +94,6 @@ class SluggableBehavior extends ModelBehavior {
 	/**
 	 * Return a slugged version of a string.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param string $string
 	 * @return string
@@ -114,7 +110,6 @@ class SluggableBehavior extends ModelBehavior {
 	/**
 	 * Validate the slug is unique by querying for other slugs.
 	 *
-	 * @access protected
 	 * @param Model $model
 	 * @param string $string
 	 * @return string

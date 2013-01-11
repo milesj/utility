@@ -18,7 +18,6 @@ class CacheKillShell extends Shell {
 	/**
 	 * Gather params and clear cache.
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function main() {

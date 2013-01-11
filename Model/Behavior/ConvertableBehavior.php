@@ -40,7 +40,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Default settings.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_defaults = array(
@@ -65,7 +64,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Merge in the settings for each field.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $settings
 	 * @throws InvalidArgumentException
@@ -96,7 +94,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Run the converter before an insert or update query.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @return boolean|mixed
 	 */
@@ -109,7 +106,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Run the converter after a find query.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param mixed $results
 	 * @param boolean $primary
@@ -128,7 +124,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Loop through the data and run the correct converter engine on the associated field.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $data
 	 * @param int $mode
@@ -165,7 +160,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Convert between serialized and unserialized arrays.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param array $options
 	 * @param int $mode
@@ -186,7 +180,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Convert between JSON and array types.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param array $options
 	 * @param int $mode
@@ -207,7 +200,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Convert between HTML entities and raw value.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param array $options
 	 * @param int $mode
@@ -228,7 +220,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Convert between base64 encoding and raw value.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param array $options
 	 * @param int $mode
@@ -249,7 +240,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Convert between url() encoding and raw value.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param array $options
 	 * @param int $mode
@@ -270,7 +260,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Convert between rawurl() encoding and raw value.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param array $options
 	 * @param int $mode
@@ -291,7 +280,6 @@ class ConvertableBehavior extends ModelBehavior {
 	/**
 	 * Convert between UTF-8 encoded and non-encoded strings.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param array $options
 	 * @param int $mode

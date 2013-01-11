@@ -16,7 +16,6 @@ class SitemapController extends Controller {
 	/**
 	 * Components.
 	 *
-	 * @access public
 	 * @var array
 	 */
 	public $components = array('RequestHandler');

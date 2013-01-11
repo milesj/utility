@@ -15,7 +15,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Helpers.
 	 *
-	 * @access public
 	 * @var array
 	 */
 	public $helpers = array('Html');
@@ -23,7 +22,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Namespaces to add to the HTML tag.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_namespaces = array();
@@ -31,7 +29,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Tags to render.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_tags = array();
@@ -39,7 +36,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Set default tags.
 	 *
-	 * @access public
 	 * @param View $View
 	 * @param array $settings
 	 */
@@ -55,7 +51,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Render an HTML tag with OG namespaces.
 	 *
-	 * @access public
 	 * @param array $options
 	 * @param array $ns
 	 * @return string
@@ -73,7 +68,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * App ID.
 	 *
-	 * @access public
 	 * @param int $id
 	 * @return OpenGraphHelper
 	 */
@@ -86,7 +80,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Admins.
 	 *
-	 * @access public
 	 * @param int|array $id
 	 * @return OpenGraphHelper
 	 */
@@ -103,7 +96,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Site name.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param string $ns
 	 * @return OpenGraphHelper
@@ -117,7 +109,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Title.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param string $ns
 	 * @return OpenGraphHelper
@@ -131,7 +122,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Type.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param string $ns
 	 * @return OpenGraphHelper
@@ -145,7 +135,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * URL.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param string $ns
 	 * @return OpenGraphHelper
@@ -159,7 +148,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Description.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param string $ns
 	 * @return OpenGraphHelper
@@ -173,7 +161,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Locale.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param string $ns
 	 * @return OpenGraphHelper
@@ -204,7 +191,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Image.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param array $options
 	 * @param string $ns
@@ -219,7 +205,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Video.
 	 *
-	 * @access public
 	 * @param string $value
 	 * @param array $options
 	 * @param string $ns
@@ -234,7 +219,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Output a tag.
 	 *
-	 * @access public
 	 * @param string $tag
 	 * @param string $value
 	 * @param array $options
@@ -253,7 +237,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Add a namespace.
 	 *
-	 * @access public
 	 * @param string $key
 	 * @param string $url
 	 * @return OpenGraphHelper
@@ -271,7 +254,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Append the meta tags to the openGraph block.
 	 *
-	 * @access public
 	 * @return string
 	 */
 	public function fetch() {
@@ -321,7 +303,6 @@ class OpenGraphHelper extends AppHelper {
 	/**
 	 * Check to see if a field is set.
 	 *
-	 * @access public
 	 * @param string $key
 	 * @param string $ns
 	 * @return boolean

@@ -51,7 +51,6 @@ class CacheableBehavior extends ModelBehavior {
 	 * 	events			- Toggle cache reset events for specific conditions
 	 * 	resetHooks		- Mapping of cache keys and arguments to reset with
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_defaults = array(
@@ -82,7 +81,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Is the current query attempting to cache.
 	 *
-	 * @access protected
 	 * @var boolean
 	 */
 	protected $_isCaching = false;
@@ -90,7 +88,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * The key and expires parameters for the current query.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_currentQuery = array();
@@ -98,7 +95,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * The Model's DB config before caching begins.
 	 *
-	 * @access protected
 	 * @var string
 	 */
 	protected $_previousDbConfig;
@@ -106,7 +102,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Cached results for the current request.
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_cached = array();
@@ -114,7 +109,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Merge settings.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $settings
 	 * @return void
@@ -146,7 +140,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * When this behavior is unloaded, delete all associated cache.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @return void
 	 */
@@ -166,7 +159,6 @@ class CacheableBehavior extends ModelBehavior {
 	 * If the result is empty or the cache doesn't exist, replace the current datasource
 	 * with a dummy shim datasource, allowing us to pull in cached results.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $query
 	 * @return array|boolean
@@ -237,7 +229,6 @@ class CacheableBehavior extends ModelBehavior {
 	 * If caching was enabled in beforeFind(), return the cached results.
 	 * If the cache is empty, write a new cache with the results from the find().
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param mixed $results
 	 * @param boolean $primary
@@ -275,7 +266,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Once a record has been updated or created, cache the results if the specific events allow it.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param boolean $created
 	 * @return boolean
@@ -315,7 +305,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Once a record has been deleted, remove the cached result.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @return boolean
 	 */
@@ -331,7 +320,6 @@ class CacheableBehavior extends ModelBehavior {
 	 * Cache data by using a Closure callback to generate the result set.
 	 * This method can be used within other methods in place the of the find() approach.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array|string $keys
 	 * @param Closure $callback
@@ -363,7 +351,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Generate a cache key. The first index should be the method name, the other indices should be unique values.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array|string $keys
 	 * @param boolean $prefix
@@ -405,7 +392,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Return the expiration time for cache. Either used the passed value, or the settings default.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param mixed $expires
 	 * @return int|string
@@ -425,7 +411,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Read data from the cache.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array|string $keys
 	 * @return mixed
@@ -437,7 +422,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Write data to the cache. Be sure to parse the cache key and validate the config and expires.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array|string $keys
 	 * @param mixed $value
@@ -453,7 +437,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Delete a cached item based on the defined key(s).
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array|string $keys
 	 * @return boolean
@@ -466,7 +449,6 @@ class CacheableBehavior extends ModelBehavior {
 	 * Global function to reset specific cache keys within each model. By default, reset the getById and getList method keys.
 	 * If the ID passed is an array of IDs, run through each hook and reset those caches only if each field exists.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param string|array $id
 	 * @return boolean
@@ -515,7 +497,6 @@ class CacheableBehavior extends ModelBehavior {
 	/**
 	 * Clear all the currently cached items.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @return boolean
 	 */

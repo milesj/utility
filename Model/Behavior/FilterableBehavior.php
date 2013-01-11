@@ -36,7 +36,6 @@ class FilterableBehavior extends ModelBehavior {
 	 * 	paranoid	- Removes any non-alphanumeric characters
 	 *	escape		- Escapes SQL queries
 	 *
-	 * @access protected
 	 * @var array
 	 */
 	protected $_defaults = array(
@@ -57,7 +56,6 @@ class FilterableBehavior extends ModelBehavior {
 	/**
 	 * Merge in the settings for each field.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @param array $settings
 	 * @return void
@@ -93,7 +91,6 @@ class FilterableBehavior extends ModelBehavior {
 	/**
 	 * Run the filters before each save.
 	 *
-	 * @access public
 	 * @param Model $model
 	 * @return boolean|mixed
 	 */

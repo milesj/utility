@@ -20,7 +20,6 @@ class ShimSource extends DataSource {
 	/**
 	 * Return the Model schema.
 	 *
-	 * @access public
 	 * @param Model|string $model
 	 * @return array
 	 */
@@ -31,7 +30,6 @@ class ShimSource extends DataSource {
 	/**
 	 * Return $data else the query will fail.
 	 *
-	 * @access public
 	 * @param mixed $data
 	 * @return array|null
 	 */
