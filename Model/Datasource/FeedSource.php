@@ -240,7 +240,7 @@ class FeedSource extends DataSource {
 
 		// Gather elements
 		$elements = array(
-			'title',
+			'title' => array('title'),
 			'guid' => array('guid', 'id'),
 			'date' => array('date', 'pubDate', 'published', 'updated'),
 			'link' => array('link', 'origLink'),
@@ -259,11 +259,6 @@ class FeedSource extends DataSource {
 			$data = array();
 
 			foreach ($elements as $element => $keys) {
-				if (is_numeric($element)) {
-					$element = $keys;
-					$keys = array($keys);
-				}
-
 				if (isset($keys['attributes'])) {
 					$attributes = $keys['attributes'];
 					unset($keys['attributes']);
@@ -277,9 +272,7 @@ class FeedSource extends DataSource {
 
 				foreach ($keys as $key) {
 					if (isset($item[$key]) && empty($data[$element])) {
-						$value = $this->_extract($item[$key], $attributes);
-
-						if (!empty($value)) {
+						if ($value = $this->_extract($item[$key], $attributes)) {
 							$data[$element] = $value;
 							break;
 						}
@@ -288,7 +281,7 @@ class FeedSource extends DataSource {
 			}
 
 			if (empty($data['link'])) {
-				trigger_error(sprintf('Feed %s does not have a valid link element.', $source), E_USER_NOTICE);
+				trigger_error(sprintf('Feed %s does not have a valid link element', $source), E_USER_NOTICE);
 				continue;
 			}
 
@@ -296,18 +289,21 @@ class FeedSource extends DataSource {
 				$data['source'] = (string) $source;
 			}
 
-			$sort = null;
+			// Determine how to sort
+			$sortBy = $query['feed']['sort'];
 
-			if (isset($data[$query['feed']['sort']])) {
-				$sort = $data[$query['feed']['sort']];
+			if (isset($data[$sortBy])) {
+				$sort = $data[$sortBy];
+			} else if (isset($data['date'])) {
+				$sort = $data['date'];
+			} else {
+				$sort = null;
 			}
 
-			if (!$sort) {
-				if ($query['feed']['sort'] == 'date' && isset($data['date'])) {
-					$sort = strtotime($data['date']);
-				} else {
-					$sort = microtime();
-				}
+			if ($sortBy === 'date' && $sort) {
+				$sort = strtotime($sort);
+			} else if (!$sort) {
+				$sort = microtime();
 			}
 
 			if ($data) {
