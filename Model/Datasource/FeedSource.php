@@ -8,7 +8,8 @@
 App::uses('Folder', 'Utility');
 App::uses('DataSource', 'Model/Datasource');
 App::uses('HttpSocket', 'Network/Http');
-App::import('Vendor', 'Utility.TypeConverter');
+
+use Titon\Utility\Converter;
 
 /**
  * A DataSource that can read and parse web feeds and aggregate them into a single result.
@@ -219,7 +220,7 @@ class FeedSource extends DataSource {
 	 * @return boolean
 	 */
 	protected function _process(HttpResponse $response, $query, $source) {
-		$feed = TypeConverter::toArray($response->body());
+		$feed = Converter::toArray($response->body());
 		$clean = array();
 
 		if (!empty($query['root']) && !empty($feed[$query['feed']['root']])) {

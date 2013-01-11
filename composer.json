@@ -18,7 +18,8 @@
 	"require": {
 		"php": ">=5.3",
 		"composer/installers": "*",
-		"mjohnson/decoda": "5.*"
+		"mjohnson/decoda": "5.*",
+		"titon/utility": "*"
 	},
 	"support": {
 		"source": "https://github.com/milesj/cake-utility"
