@@ -325,11 +325,11 @@ class CacheableBehavior extends ModelBehavior {
 	 * @param Closure $callback
 	 * @param string $expires
 	 * @return mixed
-	 * @throws Exception
+	 * @throws InvalidArgumentException
 	 */
 	public function cache(Model $model, $keys, $callback, $expires = null) {
 		if (!($callback instanceof Closure)) {
-			throw new Exception(sprintf('A Closure is required for %s.', __METHOD__));
+			throw new InvalidArgumentException(sprintf('A Closure is required for %s', __METHOD__));
 		}
 
 		if (Configure::read('Cache.disable')) {

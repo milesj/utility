@@ -117,20 +117,21 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @param string $key
 	 * @param mixed $value
 	 * @return mixed
-	 * @throws Exception
+	 * @throws InvalidArgumentException
+	 * @throws OutOfBoundsException
 	 */
 	public function enum($model, $key = null, $value = null) {
 		$alias = is_string($model) ? $model : $model->alias;
 
 		if (!isset($this->_enums[$alias])) {
-			throw new Exception(sprintf('%s::$enum does not exist.', $alias));
+			throw new InvalidArgumentException(sprintf('%s::$enum does not exist', $alias));
 		}
 
 		$enum = $this->_enums[$alias];
 
 		if ($key) {
 			if (!isset($enum[$key])) {
-				throw new Exception(sprintf('Field %s does not exist within %s::$enum.', $key, $model->alias));
+				throw new OutOfBoundsException(sprintf('Field %s does not exist within %s::$enum', $key, $model->alias));
 			}
 
 			if ($value !== null) {
