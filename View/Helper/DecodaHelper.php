@@ -50,7 +50,9 @@ class DecodaHelper extends AppHelper {
 			'paths' => array(),
 			'whitelist' => array(),
 			'blacklist' => array(),
-			'helpers' => array('Time', 'Html', 'Text')
+			'helpers' => array('Time', 'Html', 'Text'),
+			'filters' => array(),
+			'hooks' => array()
 		);
 
 		$locale = Configure::read('Config.language') ?: $settings['locale'];
@@ -72,28 +74,50 @@ class DecodaHelper extends AppHelper {
 
 		unset($settings['locale']);
 
-		$this->_decoda = new \Decoda\Decoda('', $settings);
-		$this->_decoda
+		$decoda = new \Decoda\Decoda('', $settings);
+		$decoda
 			->whitelist($settings['whitelist'])
-			->blacklist($settings['blacklist'])
-			->defaults();
-
-		if (isset($localeMap[$locale])) {
-			$this->_decoda->setLocale($localeMap[$locale]);
-
-		} else if (in_array($locale, $localeMap)) {
-			$this->_decoda->setLocale($locale);
-		}
+			->blacklist($settings['blacklist']);
 
 		if ($settings['paths']) {
 			foreach ((array) $settings['paths'] as $path) {
-				$this->_decoda->addPath($path);
+				$decoda->addPath($path);
+			}
+		}
+
+		// Set locale
+		if (isset($localeMap[$locale])) {
+			$decoda->setLocale($localeMap[$locale]);
+
+		} else if (in_array($locale, $localeMap)) {
+			$decoda->setLocale($locale);
+		}
+
+		// Apply hooks and filters
+		if (empty($settings['filters']) && empty($settings['hooks'])) {
+			$decoda->defaults();
+
+		} else {
+			if ($filters = $settings['filters']) {
+				foreach ($filters as $filter) {
+					$filter = sprintf('\Decoda\Filter\%sFilter', $filter);
+					$decoda->addFilter(new $filter());
+				}
+			}
+
+			if ($hooks = $settings['hooks']) {
+				foreach ($hooks as $hook) {
+					$hook = sprintf('\Decoda\Hook\%sHook', $hook);
+					$decoda->addHook(new $hook());
+				}
 			}
 		}
 
 		// Custom config
-		$this->_decoda->addHook( new \Decoda\Hook\EmoticonHook(array('path' => '/utility/img/emoticon/')) );
-		$this->_decoda->setEngine( new CakeEngine($settings['helpers']) );
+		$decoda->addHook( new \Decoda\Hook\EmoticonHook(array('path' => '/utility/img/emoticon/')) );
+		$decoda->setEngine( new CakeEngine($settings['helpers']) );
+
+		$this->_decoda = $decoda;
 	}
 
 	/**
