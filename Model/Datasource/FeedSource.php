@@ -101,12 +101,16 @@ class FeedSource extends DataSource {
 		$query['feed']['sort'] = 'date';
 
 		if (isset($query['order'][0])) {
-			if (is_array($query['order'][0])) {
-				$sort = array_keys($query['order'][0]);
-				$query['feed']['sort'] = $sort[0];
-				$query['feed']['order'] = strtoupper($query['order'][0][$query['feed']['sort']]);
+			$order = $query['order'][0];
+
+			if (is_array($order)) {
+				foreach ($order as $sort => $o) {
+					$query['feed']['sort'] = $sort;
+					$query['feed']['order'] = strtoupper($o);
+					break;
+				}
 			} else {
-				$query['feed']['order'] = strtoupper($query['order'][0]);
+				$query['feed']['order'] = strtoupper($order);
 			}
 		}
 
@@ -159,7 +163,7 @@ class FeedSource extends DataSource {
 
 				$results = array_filter($results);
 
-				if ($query['feed']['order'] == 'ASC') {
+				if ($query['feed']['order'] === 'ASC') {
 					krsort($results);
 				} else {
 					ksort($results);
@@ -326,15 +330,15 @@ class FeedSource extends DataSource {
 			return $feed;
 		}
 
-		if (!is_numeric($count)) {
+		if ($count === null) {
 			$count = 20;
 		}
 
-		if (count($feed) > $count) {
+		if ($count && count($feed) > $count) {
 			$feed = array_slice($feed, 0, $count);
 		}
 
-		return $feed;
+		return array_values($feed);
 	}
 
 }
