@@ -83,7 +83,7 @@ class SluggableBehavior extends ModelBehavior {
 		}
 
 		if (mb_strlen($slug) > ($settings['length'] - 5)) {
-			$slug = substr($slug, 0, ($settings['length'] - 5));
+			$slug = mb_substr($slug, 0, ($settings['length'] - 5));
 		}
 
 		$model->data[$model->alias][$settings['slug']] = $this->_makeUnique($model, $slug);

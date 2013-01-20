@@ -170,7 +170,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 			// Keyword search
 			// -1 per blacklisted keyword
 			foreach ($settings['keywords'] as $keyword) {
-				if (stripos($content, $keyword) !== false) {
+				if (mb_stripos($content, $keyword) !== false) {
 					--$points;
 				}
 			}
@@ -181,18 +181,18 @@ class SpamBlockerBehavior extends ModelBehavior {
 			// -1 if more then 30 chars
 			foreach ($links as $link) {
 				foreach ($settings['blacklist'] as $character) {
-					if (stripos($link, $character) !== false) {
+					if (mb_stripos($link, $character) !== false) {
 						--$points;
 					}
 				}
 
 				foreach ($settings['keywords'] as $keyword) {
-					if (stripos($link, $keyword) !== false) {
+					if (mb_stripos($link, $keyword) !== false) {
 						--$points;
 					}
 				}
 
-				if (strlen($link) >= 30) {
+				if (mb_strlen($link) >= 30) {
 					--$points;
 				}
 			}
@@ -200,24 +200,24 @@ class SpamBlockerBehavior extends ModelBehavior {
 			// Check the website, author and comment for blacklisted
 			// -1 per instance
 			foreach ($settings['blacklist'] as $character) {
-				if (stripos($website, $character) !== false) {
+				if (mb_stripos($website, $character) !== false) {
 					--$points;
 				}
 			}
 
 			foreach ($settings['keywords'] as $keyword) {
-				if (stripos($author, $keyword) !== false) {
+				if (mb_stripos($author, $keyword) !== false) {
 					--$points;
 				}
 
-				if (stripos($content, $keyword) !== false) {
+				if (mb_stripos($content, $keyword) !== false) {
 					--$points;
 				}
 			}
 
 			// Body starts with...
 			// -10 points
-			if ($pos = stripos($content, ' ')) {
+			if ($pos = mb_stripos($content, ' ')) {
 				$firstWord = mb_substr($content, 0, $pos);
 			} else {
 				$firstWord = trim($content);
@@ -231,7 +231,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 
 			// Author name has http:// in it
 			// -2 points
-			if (stripos($author, 'http://') !== false) {
+			if (mb_stripos($author, 'http://') !== false) {
 				$points = $points - 2;
 			}
 

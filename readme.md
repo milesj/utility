@@ -7,6 +7,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 * PHP 5.3
 * CakePHP 2
 * Composer
+* Multibyte
 
 ## Libraries ##
 
