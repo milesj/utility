@@ -1,1 +1,1 @@
-<?php echo json_encode($sitemap); ?>
+<?php echo json_encode($sitemap);
