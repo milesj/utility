@@ -23,6 +23,6 @@
 		"titon/utility": "*"
 	},
 	"support": {
-		"source": "https://github.com/milesj/cake-utility"
+		"source": "https://github.com/milesj/Utility"
 	}
 }
