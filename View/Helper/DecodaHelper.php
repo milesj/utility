@@ -128,8 +128,17 @@ class DecodaHelper extends AppHelper {
 	 */
 	public function beforeRender($viewFile) {
 		if (method_exists($this, 'setupDecoda')) {
-			$this->setupDecoda($this->_decoda);
+			$this->setupDecoda($this->getDecoda());
 		}
+	}
+
+	/**
+	 * Return the Decoda instance.
+	 *
+	 * @return \Decoda\Decoda
+	 */
+	public function getDecoda() {
+		return $this->_decoda;
 	}
 
 	/**
@@ -137,13 +146,17 @@ class DecodaHelper extends AppHelper {
 	 *
 	 * @param string $string
 	 * @param array $whitelist
-	 * @param boolean $disable
+	 * @param boolean $wrap
 	 * @return string
 	 */
-	public function parse($string, array $whitelist = array(), $disable = false) {
-		$this->_decoda->reset($string)->disable($disable)->whitelist($whitelist);
+	public function parse($string, array $whitelist = array(), $wrap = true) {
+		$parsed = $this->getDecoda()->reset($string)->whitelist($whitelist)->parse();
 
-		return $this->Html->div('decoda', $this->_decoda->parse());
+		if ($wrap) {
+			return $this->Html->div('decoda', $parsed);
+		}
+
+		return $parsed;
 	}
 
 	/**
@@ -154,9 +167,7 @@ class DecodaHelper extends AppHelper {
 	 * @return string
 	 */
 	public function strip($string, $html = false) {
-		$this->_decoda->reset($string);
-
-		return $this->_decoda->strip($html);
+		return $this->getDecoda()->reset($string)->strip($html);
 	}
 
 }
