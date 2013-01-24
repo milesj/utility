@@ -1,10 +1,10 @@
-# Utility v1.3.2 #
+# Utility v1.3.3 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
 ## Requirements ##
 
-* PHP 5.3
+* PHP 5.3.0
 * CakePHP 2
 * Composer
 * Multibyte
