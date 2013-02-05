@@ -116,7 +116,7 @@ class SluggableBehavior extends ModelBehavior {
 	 */
 	protected function _makeUnique(Model $model, $string) {
 		$settings = $this->settings[$model->alias];
-		$conditions = array($settings['slug'] . ' LIKE' => '%' . $string) + $settings['scope'];
+		$conditions = array($settings['slug'] . ' LIKE' => $string . '%') + $settings['scope'];
 
 		if ($model->id) {
 			$conditions[$model->primaryKey . ' !='] = $model->id;
