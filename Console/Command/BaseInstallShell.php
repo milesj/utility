@@ -102,8 +102,13 @@ abstract class BaseInstallShell extends AppShell {
 		foreach ($this->steps as $method) {
 			$this->steps($counter);
 
-			if (!call_user_func(array($this, $method))) {
-				$this->err('<error>Installation aborted!</error>');
+			try {
+				if (!call_user_func(array($this, $method))) {
+					$this->err('<error>Installation aborted!</error>');
+					break;
+				}
+			} catch (Exception $e) {
+				$this->err(sprintf('<error>Unexpected error has occurred; %s', $e->getMessage()));
 				break;
 			}
 
@@ -123,7 +128,7 @@ abstract class BaseInstallShell extends AppShell {
 			$this->out('Available database configurations:');
 
 			foreach ($dbConfigs as $i => $db) {
-				$this->out('[' . $i . '] ' . $db);
+				$this->out(sprintf('[%s] <comment>%s</comment>', $i, $db));
 			}
 
 			$this->out();
@@ -137,7 +142,7 @@ abstract class BaseInstallShell extends AppShell {
 			}
 		}
 
-		$this->out(sprintf('You have chosen the database: %s', $this->dbConfig));
+		$this->out(sprintf('Database Config: <comment>%s</comment>', $this->dbConfig));
 
 		$answer = strtoupper($this->in('<question>Is this correct?</question>', array('Y', 'N')));
 
@@ -148,7 +153,7 @@ abstract class BaseInstallShell extends AppShell {
 
 		// Check that database is connected
 		if (!$this->db->isConnected()) {
-			$this->err(sprintf('<error>Database connection for %s failed!</error>', $this->dbConfig));
+			$this->err(sprintf('<error>Database connection for %s failed</error>', $this->dbConfig));
 			return false;
 		}
 
@@ -163,7 +168,7 @@ abstract class BaseInstallShell extends AppShell {
 	 */
 	public function checkRequiredTables() {
 		if ($this->requiredTables) {
-			$this->out(sprintf('The following tables are required: %s', implode(', ', $this->requiredTables)));
+			$this->out(sprintf('The following tables are required: <comment>%s</comment>', implode(', ', $this->requiredTables)));
 			$this->out('<info>Checking tables...</info>');
 
 			$tables = $this->db->listSources();
@@ -195,7 +200,7 @@ abstract class BaseInstallShell extends AppShell {
 			$this->setTablePrefix($this->in('<question>What table prefix would you like to use?</question>'));
 		}
 
-		$this->out(sprintf('You have chosen the prefix: %s', $this->tablePrefix));
+		$this->out(sprintf('Table Prefix: <comment>%s</comment>', $this->tablePrefix));
 
 		$answer = strtoupper($this->in('<question>Is this correct?</question>', array('Y', 'N')));
 
@@ -218,7 +223,7 @@ abstract class BaseInstallShell extends AppShell {
 			$this->setUsersModel($this->in('<question>What is the name of your users model?</question>'));
 		}
 
-		$this->out(sprintf('You have chosen the model: %s', $this->usersModel));
+		$this->out(sprintf('Users Model: <comment>%s</comment>', $this->usersModel));
 
 		$answer = strtoupper($this->in('<question>Is this correct?</question>', array('Y', 'N')));
 
@@ -238,7 +243,7 @@ abstract class BaseInstallShell extends AppShell {
 			$this->setUsersTable($this->in('<question>What is the name of your users table?</question>'));
 		}
 
-		$this->out(sprintf('You have chosen the table: %s', $this->usersTable));
+		$this->out(sprintf('Users Table: <comment>%s</comment>', $this->usersTable));
 
 		$answer = strtoupper($this->in('<question>Is this correct?</question>', array('Y', 'N')));
 
@@ -274,7 +279,7 @@ abstract class BaseInstallShell extends AppShell {
 
 		foreach ($schemas as $schema) {
 			$contents = file_get_contents($schema);
-			$contents = String::insert($contents, array('prefix' => FORUM_PREFIX), array('before' => '{', 'after' => '}'));
+			$contents = String::insert($contents, array('prefix' => $this->tablePrefix), array('before' => '{', 'after' => '}'));
 			$contents = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $contents);
 
 			$queries = explode(';', $contents);
@@ -294,8 +299,7 @@ abstract class BaseInstallShell extends AppShell {
 		}
 
 		if ($executed != $total) {
-			$this->out('<error>Failed to create database tables!</error>');
-			$this->out('Rolling back and dropping any created tables');
+			$this->out('<error>Failed to create database tables; rolling back tables</error>');
 
 			foreach ($tables as $table) {
 				$this->db->execute(sprintf('DROP TABLE `%s`;', $table));
@@ -544,7 +548,7 @@ abstract class BaseInstallShell extends AppShell {
 			if ($counter < $step) {
 				$this->out('[x] ' . $title);
 			} else {
-				$this->out('[' . $counter . '] <comment>' . $title . '</comment>');
+				$this->out(sprintf('[%s] <comment>%s</comment>', $counter, $title));
 			}
 
 			$counter++;
