@@ -277,13 +277,16 @@ abstract class BaseInstallShell extends AppShell {
 		$total = count($schemas);
 		$tables = array();
 
+		$this->out('<info>Creating tables...</info>');
+
 		foreach ($schemas as $schema) {
 			$contents = file_get_contents($schema);
 			$contents = String::insert($contents, array('prefix' => $this->tablePrefix), array('before' => '{', 'after' => '}'));
 			$contents = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $contents);
 
 			$queries = explode(';', $contents);
-			$tables[] = $this->tablePrefix . str_replace('.sql', '', basename($schema));
+			$table = $this->tablePrefix . str_replace('.sql', '', basename($schema));
+			$tables[] = $table;
 
 			foreach ($queries as $query) {
 				$query = trim($query);
@@ -296,6 +299,8 @@ abstract class BaseInstallShell extends AppShell {
 					}
 				}
 			}
+
+			$this->out($table);
 		}
 
 		if ($executed != $total) {
