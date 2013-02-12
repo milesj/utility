@@ -50,7 +50,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 	 * @var array
 	 */
 	protected $_defaults = array(
-		'model' => 'Article',
+		'model' => 'article',
 		'link' => '',
 		'email' => '',
 		'useSlug' => false,
@@ -309,7 +309,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 			}
 
 			// Get result from foreign model
-			$article = ClassRegistry::init($settings['model']);
+			$article = ClassRegistry::init(Inflector::classify($settings['model']));
 			$result = $article->find('first', array(
 				'fields' => $fields,
 				'conditions' => array($columnMap['id'] => $data[$columnMap['foreignKey']]),

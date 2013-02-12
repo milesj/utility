@@ -73,17 +73,17 @@ class SluggableBehavior extends ModelBehavior {
 		$slug = $model->data[$model->alias][$settings['field']];
 
 		if (method_exists($model, 'beforeSlug')) {
-			$slug = $model->beforeSlug($slug);
+			$slug = $model->beforeSlug($slug, $this);
 		}
 
 		$slug = $this->slugify($model, $slug);
 
 		if (method_exists($model, 'afterSlug')) {
-			$slug = $model->afterSlug($slug);
+			$slug = $model->afterSlug($slug, $this);
 		}
 
-		if (mb_strlen($slug) > ($settings['length'] - 5)) {
-			$slug = mb_substr($slug, 0, ($settings['length'] - 5));
+		if (mb_strlen($slug) > ($settings['length'] - 3)) {
+			$slug = mb_substr($slug, 0, ($settings['length'] - 3));
 		}
 
 		$model->data[$model->alias][$settings['slug']] = $this->_makeUnique($model, $slug);

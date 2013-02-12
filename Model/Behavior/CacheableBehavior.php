@@ -58,7 +58,7 @@ class CacheableBehavior extends ModelBehavior {
 		'dbConfig' => 'shim',
 		'expires' => '+5 minutes',
 		'prefix' => '',
-		'appendKey' => 'Cacheable',
+		'appendKey' => false,
 		'methodKeys' => array(
 			'getAll' => 'getAll',
 			'getList' => 'getList',

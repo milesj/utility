@@ -203,9 +203,9 @@ class FeedSource extends DataSource {
 					}
 				}
 			}
-		} else {
-			return trim($item);
 		}
+
+		return trim($item);
 	}
 
 	/**
