@@ -32,6 +32,7 @@ class SluggableBehavior extends ModelBehavior {
 	 * 	separator	- The separating character between words
 	 * 	length		- The max length of a slug
 	 * 	onUpdate	- Will update the slug when a record is updated
+	 * 	unique		- Whether to make the slug unique or not
 	 *
 	 * @var array
 	 */
@@ -41,7 +42,8 @@ class SluggableBehavior extends ModelBehavior {
 		'scope' => array(),
 		'separator' => '-',
 		'length' => 255,
-		'onUpdate' => true
+		'onUpdate' => true,
+		'unique' => true
 	);
 
 	/**
@@ -86,7 +88,11 @@ class SluggableBehavior extends ModelBehavior {
 			$slug = mb_substr($slug, 0, ($settings['length'] - 3));
 		}
 
-		$model->data[$model->alias][$settings['slug']] = $this->_makeUnique($model, $slug);
+		if ($settings['unique']) {
+			$slug = $this->_makeUnique($model, $slug);
+		}
+
+		$model->data[$model->alias][$settings['slug']] = $slug;
 
 		return true;
 	}
