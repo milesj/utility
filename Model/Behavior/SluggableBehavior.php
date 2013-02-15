@@ -65,7 +65,9 @@ class SluggableBehavior extends ModelBehavior {
 	public function beforeSave(Model $model) {
 		$settings = $this->settings[$model->alias];
 
-		if (empty($model->data[$model->alias]) || empty($model->data[$model->alias][$settings['field']])) {
+		if (empty($model->data[$model->alias]) ||
+			empty($model->data[$model->alias][$settings['field']]) ||
+			!empty($model->data[$model->alias][$settings['slug']])) {
 			return true;
 
 		} else if ($model->id && !$settings['onUpdate']) {
