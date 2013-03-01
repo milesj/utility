@@ -52,7 +52,13 @@ class ValidateableBehavior extends ModelBehavior {
 	 * @param array $settings
 	 */
 	public function setup(Model $model, $settings = array()) {
-		$this->settings[$model->alias] = array_merge($this->_defaults, $settings);
+		$settings = array_merge($this->_defaults, $settings);
+		$this->settings[$model->alias] = $settings;
+
+		// Store the default model validate set
+		if (!empty($model->validate)) {
+			$model->validations[$settings['defaultSet']] = $model->validate;
+		}
 	}
 
 	/**
