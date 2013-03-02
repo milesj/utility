@@ -11,6 +11,7 @@ Configure::write('Cache.disable', true);
 App::uses('ConnectionManager', 'Model');
 App::uses('Validation', 'Utility');
 App::uses('AppShell', 'Console/Command');
+config('database');
 
 abstract class BaseInstallShell extends AppShell {
 
@@ -95,7 +96,7 @@ abstract class BaseInstallShell extends AppShell {
 	 */
 	public function main() {
 		$this->hr(1);
-		$this->out('Installation Steps:');
+		$this->out(sprintf('%s Steps:', $this->name));
 
 		$counter = 1;
 
@@ -104,7 +105,7 @@ abstract class BaseInstallShell extends AppShell {
 
 			try {
 				if (!call_user_func(array($this, $method))) {
-					$this->err('<error>Installation aborted!</error>');
+					$this->err('<error>Process aborted!</error>');
 					break;
 				}
 			} catch (Exception $e) {

@@ -30,24 +30,12 @@ abstract class BaseUpgradeShell extends BaseInstallShell {
 	public $versions = array();
 
 	/**
-	 * Use the installers step process.
-	 */
-	public function main() {
-		$this->setSteps(array(
-			'Check Database Configuration' => 'checkDbConfig',
-			'Available Upgrade Versions' => 'versions'
-		));
-
-		parent::main();
-	}
-
-	/**
 	 * Set the list of available upgrade versions.
 	 *
 	 * @param array $versions
 	 * @return BaseUpgradeShell
 	 */
-	public function setUpgradeVersions(array $versions) {
+	public function setVersions(array $versions) {
 		$this->versions = $versions;
 
 		return $this;
