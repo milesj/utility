@@ -50,7 +50,7 @@ abstract class BaseUpgradeShell extends BaseInstallShell {
 	public function to($version) {
 		$this->out(sprintf('<info>Upgrading to %s...</info>', $version));
 
-		$schema = CakePlugin::path($this->plugin) . '/Config/Schema/Upgrade/' . $version  .'.sql';
+		$schema = sprintf('%s/Config/Schema/Upgrade/%s.sql', CakePlugin::path($this->plugin), $version);
 
 		if (!file_exists($schema)) {
 			$this->err(sprintf('<error>Upgrade schema %s does not exist</error>', basename($schema)));
@@ -65,23 +65,7 @@ abstract class BaseUpgradeShell extends BaseInstallShell {
 		}
 
 		// Execute the schema
-		$contents = file_get_contents($schema);
-		$contents = String::insert($contents, array('prefix' => $this->tablePrefix), array('before' => '{', 'after' => '}'));
-		$contents = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $contents);
-
-		$queries = explode(';', $contents);
-		$executed = 0;
-
-		foreach ($queries as $query) {
-			$query = trim($query);
-
-			if ($query !== '' && $this->db->execute($query)) {
-				$executed++;
-			}
-		}
-
-		// Store response
-		if ($executed) {
+		if ($this->executeSchema($schema, false)) {
 			$this->complete[] = $version;
 
 			$this->out(sprintf('<info>Upgrade to %s complete</info>', $version));

@@ -275,37 +275,22 @@ abstract class BaseInstallShell extends AppShell {
 
 		$schemas = glob(CakePlugin::path($this->plugin) . '/Config/Schema/*.sql');
 		$executed = 0;
-		$total = count($schemas);
 		$tables = array();
 
+		// Loop over schemas and execute queries
 		$this->out('<info>Creating tables...</info>');
 
 		foreach ($schemas as $schema) {
-			$contents = file_get_contents($schema);
-			$contents = String::insert($contents, array('prefix' => $this->tablePrefix), array('before' => '{', 'after' => '}'));
-			$contents = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $contents);
-
-			$queries = explode(';', $contents);
 			$table = $this->tablePrefix . str_replace('.sql', '', basename($schema));
 			$tables[] = $table;
 
-			foreach ($queries as $query) {
-				$query = trim($query);
-
-				if ($query !== '' && $this->db->execute($query)) {
-					$command = trim(substr($query, 0, strpos($query, ' ')));
-
-					if ($command === 'CREATE' || $command === 'ALTER') {
-						$executed++;
-					}
-				}
-			}
-
+			$executed += $this->executeSchema($schema);
 			$this->out($table);
 		}
 
-		if ($executed != $total) {
-			$this->out('<error>Failed to create database tables; rolling back tables</error>');
+		// Rollback if a failure occurs
+		if ($executed != count($schemas)) {
+			$this->out('<error>Failed to create database tables; rolling back</error>');
 
 			foreach ($tables as $table) {
 				$this->db->execute(sprintf('DROP TABLE `%s`;', $table));
@@ -341,6 +326,41 @@ abstract class BaseInstallShell extends AppShell {
 		));
 
 		return $model->id;
+	}
+
+	/**
+	 * Execute a schema SQL file using the loaded datasource.
+	 *
+	 * @param string $path
+	 * @param bool $track
+	 * @return int
+	 * @throws DomainException
+	 */
+	public function executeSchema($path, $track = true) {
+		if (!file_exists($path)) {
+			throw new DomainException(sprintf('<error>Schema %s does not exist</error>', basename($path)));
+		}
+
+		$contents = file_get_contents($path);
+		$contents = String::insert($contents, array('prefix' => $this->tablePrefix), array('before' => '{', 'after' => '}'));
+		$contents = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $contents);
+
+		$queries = explode(';', $contents);
+		$executed = 0;
+
+		foreach ($queries as $query) {
+			if ($this->db->execute(trim($query))) {
+				$command = trim(substr($query, 0, strpos($query, ' ')));
+
+				if ($track && ($command === 'CREATE' || $command === 'ALTER')) {
+					$executed++;
+				} else {
+					$executed++;
+				}
+			}
+		}
+
+		return $executed;
 	}
 
 	/**
