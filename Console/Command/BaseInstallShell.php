@@ -108,7 +108,7 @@ abstract class BaseInstallShell extends AppShell {
 					break;
 				}
 			} catch (Exception $e) {
-				$this->err(sprintf('<error>Unexpected error has occurred; %s', $e->getMessage()));
+				$this->err(sprintf('<error>Unexpected error has occurred; %s</error>', $e->getMessage()));
 				break;
 			}
 
@@ -133,7 +133,7 @@ abstract class BaseInstallShell extends AppShell {
 
 			$this->out();
 
-			$answer = $this->in('<question>Which database should the tables be created in?</question>', array_keys($dbConfigs));
+			$answer = $this->in('<question>Which database should the queries be executed in?</question>', array_keys($dbConfigs));
 
 			if (isset($dbConfigs[$answer])) {
 				$this->setDbConfig($dbConfigs[$answer]);
@@ -181,7 +181,7 @@ abstract class BaseInstallShell extends AppShell {
 			}
 
 			if ($missing) {
-				$this->err(sprintf('<error>Missing tables %s; installation can not proceed</error>', implode(', ', $missing)));
+				$this->err(sprintf('<error>Missing tables %s; can not proceed</error>', implode(', ', $missing)));
 				return false;
 			}
 		}
