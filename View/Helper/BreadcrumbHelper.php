@@ -37,11 +37,46 @@ class BreadcrumbHelper extends AppHelper {
 	 * @return BreadcrumbHelper
 	 */
 	public function add($title, $url, array $options = array()) {
+		$this->append($title, $url, $options);
+
+		return $this;
+	}
+
+	/**
+	 * Add a breadcrumb to the end of the list.
+	 *
+	 * @param string $title
+	 * @param string|array $url
+	 * @param array $options
+	 * @return BreadcrumbHelper
+	 */
+	public function append($title, $url, array $options = array()) {
 		$this->_crumbs[] = array(
 			'title' => $title,
 			'url' => $url,
 			'options' => $options
 		);
+
+		$this->OpenGraph->title($this->pageTitle(null, array('reverse' => true)));
+		$this->OpenGraph->uri($url);
+
+		return $this;
+	}
+
+	/**
+	 * Add a breadcrumb to the beginning of the list.
+	 *
+	 * @param string $title
+	 * @param string|array $url
+	 * @param array $options
+	 * @return BreadcrumbHelper
+	 */
+	public function prepend($title, $url, array $options = array()) {
+		array_unshift($this->_crumbs, array(
+			'title' => $title,
+			'url' => $url,
+			'options' => $options
+		));
 
 		$this->OpenGraph->title($this->pageTitle(null, array('reverse' => true)));
 		$this->OpenGraph->uri($url);
@@ -125,8 +160,7 @@ class BreadcrumbHelper extends AppHelper {
 
 		if ($count) {
 			if ($options['depth'] && $count > $options['depth']) {
-				$depth = $options['depth'] - 1;
-				$title = array_slice($crumbs, -$depth);
+				$title = array_slice($crumbs, -$options['depth']);
 				array_unshift($title, array_shift($crumbs));
 
 			} else {
@@ -137,15 +171,15 @@ class BreadcrumbHelper extends AppHelper {
 			$title[] = $pageTitle;
 		}
 
-		if ($base) {
-			array_unshift($title, $base);
-		}
-
 		if ($options['reverse']) {
 			$title = array_reverse($title);
 		}
 
-		return implode($options['separator'], $title);
+		if ($base) {
+			array_unshift($title, $base);
+		}
+
+		return implode($options['separator'], array_unique($title));
 	}
 
 }
