@@ -57,6 +57,10 @@ class ValidateableBehavior extends ModelBehavior {
 
 		// Store the default model validate set
 		if (!empty($model->validate)) {
+			if (empty($model->validations)) {
+				$model->validations = array();
+			}
+
 			$model->validations[$settings['defaultSet']] = $model->validate;
 		}
 	}
