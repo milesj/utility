@@ -1,4 +1,4 @@
-# Utility v1.3.3 #
+# Utility v1.4.0-rc1 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
@@ -40,6 +40,8 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 
 **Shells**
 * CacheKill - Clear cache from the command line
+* BaseInstall - An abstract shell that provides installation functionality for plugins
+* BaseUpgrade - An abstract shell that provides version upgrade migration functionality for plugins
 
 ## Documentation ##
 
