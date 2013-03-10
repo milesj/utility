@@ -62,6 +62,7 @@ class CacheableBehavior extends ModelBehavior {
 		'methodKeys' => array(
 			'getAll' => 'getAll',
 			'getList' => 'getList',
+			'getCount' => 'getCount',
 			'getById' => 'getById',
 			'getBySlug' => 'getBySlug'
 		),
@@ -73,6 +74,7 @@ class CacheableBehavior extends ModelBehavior {
 		'resetHooks' => array(
 			'getAll' => true,
 			'getList' => true,
+			'getCount' => true,
 			'getById' => array('id'),
 			'getBySlug' => array('slug')
 		)
@@ -299,6 +301,10 @@ class CacheableBehavior extends ModelBehavior {
 			$this->deleteCache($model, array($model->alias . '::' . $getList));
 		}
 
+		if ($getCount = $settings['methodKeys']['getCount']) {
+			$this->deleteCache($model, array($model->alias . '::' . $getCount));
+		}
+
 		return $created;
 	}
 
@@ -454,6 +460,10 @@ class CacheableBehavior extends ModelBehavior {
 
 		if ($getList = $this->settings[$alias]['methodKeys']['getList']) {
 			$this->deleteCache($model, array($alias . '::' . $getList));
+		}
+
+		if ($getCount = $this->settings[$alias]['methodKeys']['getCount']) {
+			$this->deleteCache($model, array($alias . '::' . $getCount));
 		}
 
 		if (!$id) {
