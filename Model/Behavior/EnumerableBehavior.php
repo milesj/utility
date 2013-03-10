@@ -60,7 +60,7 @@ class EnumerableBehavior extends ModelBehavior {
 	 *
 	 * @var boolean
 	 */
-	public $format = self::REPLACE;
+	public $format = self::APPEND;
 
 	/**
 	 * Toggle the replacing of raw values with enum values when a record is being updated (checks Model::$id).

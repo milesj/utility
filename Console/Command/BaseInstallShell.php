@@ -349,11 +349,19 @@ abstract class BaseInstallShell extends AppShell {
 		$executed = 0;
 
 		foreach ($queries as $query) {
-			if ($this->db->execute(trim($query))) {
+			$query = trim($query);
+
+			if (!$query) {
+				continue;
+			}
+
+			if ($this->db->execute($query)) {
 				$command = trim(substr($query, 0, strpos($query, ' ')));
 
-				if ($track && ($command === 'CREATE' || $command === 'ALTER')) {
-					$executed++;
+				if ($track) {
+					if ($command === 'CREATE' || $command === 'ALTER') {
+						$executed++;
+					}
 				} else {
 					$executed++;
 				}
