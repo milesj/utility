@@ -1,13 +1,18 @@
-# Utility v1.4.0-rc2 #
+# Utility v1.4.0-rc3 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
 ## Requirements ##
 
 * PHP 5.3.0
+	* Multibyte
 * CakePHP 2
 * Composer
-* Multibyte
+
+## Dependencies ##
+
+* Decoda - https://github.com/milesj/Decoda
+* Titon.Utility - https://github.com/titon/Titon.Utility
 
 ## Libraries ##
 
