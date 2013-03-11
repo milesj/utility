@@ -52,7 +52,7 @@ class BreadcrumbHelper extends AppHelper {
 	 */
 	public function append($title, $url, array $options = array()) {
 		$this->_crumbs[] = array(
-			'title' => $title,
+			'title' => strip_tags($title),
 			'url' => $url,
 			'options' => $options
 		);
@@ -73,7 +73,7 @@ class BreadcrumbHelper extends AppHelper {
 	 */
 	public function prepend($title, $url, array $options = array()) {
 		array_unshift($this->_crumbs, array(
-			'title' => $title,
+			'title' => strip_tags($title),
 			'url' => $url,
 			'options' => $options
 		));

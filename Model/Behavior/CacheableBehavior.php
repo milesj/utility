@@ -392,6 +392,77 @@ class CacheableBehavior extends ModelBehavior {
 	}
 
 	/**
+	 * Convenience model method for returning all records.
+	 *
+	 * @param Model $model
+	 * @return array
+	 */
+	public function getAll(Model $model) {
+		return $model->find('all', array(
+			'cache' => $model->alias . '::getAll',
+			'cacheExpires' => $this->getExpiration($model)
+		));
+	}
+
+	/**
+	 * Convenience model method for returning all records as a list.
+	 *
+	 * @param Model $model
+	 * @return array
+	 */
+	public function getList(Model $model) {
+		return $model->find('list', array(
+			'cache' => $model->alias . '::getList',
+			'cacheExpires' => $this->getExpiration($model)
+		));
+	}
+
+	/**
+	 * Convenience model method for returning a count of all records.
+	 *
+	 * @param Model $model
+	 * @return array
+	 */
+	public function getCount(Model $model) {
+		return $model->find('count', array(
+			'cache' => $model->alias . '::getCount',
+			'cacheExpires' => $this->getExpiration($model)
+		));
+	}
+
+	/**
+	 * Convenience model method for returning a record by ID.
+	 *
+	 * @param Model $model
+	 * @param int $id
+	 * @return array
+	 */
+	public function getById(Model $model, $id) {
+		return $model->find('first', array(
+			'conditions' => array($model->alias . '.' . $model->primaryKey => $id),
+			'contain' => array_keys($model->belongsTo),
+			'cache' => array($model->alias . '::getById', $id),
+			'cacheExpires' => $this->getExpiration($model)
+		));
+	}
+
+	/**
+	 * Convenience model method for returning a record by slug.
+	 *
+	 * @param Model $model
+	 * @param string $slug
+	 * @return array
+	 */
+	public function getBySlug(Model $model, $slug) {
+		return $model->find('first', array(
+			'conditions' => array($model->alias . '.slug' => $slug),
+			'contain' => array_keys($model->belongsTo),
+			'cache' => array($model->alias . '::getBySlug', $slug),
+			'cacheExpires' => $this->getExpiration($model)
+		));
+	}
+
+	/**
 	 * Return the expiration time for cache. Either used the passed value, or the settings default.
 	 *
 	 * @param Model $model
