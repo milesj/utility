@@ -43,7 +43,7 @@ class UtilityHelper extends AppHelper {
 				$v = $message;
 			}
 
-			if ($value && $value == $k) {
+			if ($value !== null && $value == $k) {
 				return $v;
 			}
 		}
