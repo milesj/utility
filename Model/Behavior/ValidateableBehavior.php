@@ -108,6 +108,7 @@ class ValidateableBehavior extends ModelBehavior {
 			}
 
 			$model->validations[$settings['defaultSet']] = $model->validate;
+			$model->validate = null;
 		}
 	}
 

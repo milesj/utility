@@ -37,23 +37,7 @@ class DecodaHelper extends AppHelper {
 	public function __construct(View $view, $settings = array()) {
 		parent::__construct($view, $settings);
 
-		$settings = $settings + array(
-			'open' => '[',
-			'close' => ']',
-			'locale' => 'en-us',
-			'disabled' => false,
-			'shorthandLinks' => false,
-			'xhtmlOutput' => false,
-			'escapeHtml' => true,
-			'strictMode' => true,
-			'maxNewlines' => 3,
-			'paths' => array(),
-			'whitelist' => array(),
-			'blacklist' => array(),
-			'helpers' => array('Time', 'Html', 'Text'),
-			'filters' => array(),
-			'hooks' => array()
-		);
+		$settings = $settings + Configure::read('Decoda.config');
 
 		$locale = Configure::read('Config.language') ?: $settings['locale'];
 		$localeMap = array(
