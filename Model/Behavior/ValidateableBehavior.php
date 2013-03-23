@@ -144,6 +144,21 @@ class ValidateableBehavior extends ModelBehavior {
 	}
 
 	/**
+	 * Convenience method to invalidate a field and translate the custom message.
+	 *
+	 * @param Model $model
+	 * @param string $field
+	 * @param string $message
+	 * @param array $params
+	 * @return bool
+	 */
+	public function invalid(Model $model, $field, $message, $params = array()) {
+		$model->invalidate($field, $this->_translate($model, $message, $params));
+
+		return false;
+	}
+
+	/**
 	 * If validate is empty and a default set exists, apply the rules.
 	 *
 	 * @param Model $model
@@ -195,20 +210,30 @@ class ValidateableBehavior extends ModelBehavior {
 				}
 
 				if (isset($this->_messages[$rule]) && empty($rules['message'])) {
-					$message = $this->_messages[$rule];
-
-					if ($domain = $this->settings[$model->alias]['localeDomain']) {
-						$message = __d($domain, $message, $params);
-					} else {
-						$message = vsprintf($message, $params);
-					}
-
-					$rules['message'] = $message;
+					$rules['message'] = $this->_translate($model, $this->_messages[$rule], $params);
 				}
 			}
 		}
 
 		return $rules;
+	}
+
+	/**
+	 * Translate a message if the domain is set, else fallback and parse in params.
+	 *
+	 * @param Model $model
+	 * @param string $message
+	 * @param array $params
+	 * @return string
+	 */
+	protected function _translate(Model $model, $message, $params = array()) {
+		if ($domain = $this->settings[$model->alias]['localeDomain']) {
+			$message = __d($domain, $message, $params);
+		} else {
+			$message = vsprintf($message, $params);
+		}
+
+		return $message;
 	}
 
 	/**
@@ -224,7 +249,7 @@ class ValidateableBehavior extends ModelBehavior {
 				$rules[$key] = $this->_translateRules($model, $value);
 
 			} else if ($key === 'message') {
-				$rules[$key] = __d($this->settings[$model->alias]['localeDomain'], $value);
+				$rules[$key] = $this->_translate($model, $value);
 			}
 		}
 
