@@ -10,6 +10,13 @@ App::uses('AppHelper', 'View/Helper');
 class UtilityHelper extends AppHelper {
 
 	/**
+	 * Cached data for the current request.
+	 *
+	 * @var array
+	 */
+	protected $_cached = array();
+
+	/**
 	 * Retrieve an enum list for a Models field and translate the values.
 	 *
 	 * @param string $model
@@ -32,25 +39,29 @@ class UtilityHelper extends AppHelper {
 			}
 		}
 
-		// Translate the enum
+		// Cache the translations
 		$key = Inflector::underscore($model) . '.' . Inflector::underscore($field);
+		$cache = $key . '.enum';
 
-		foreach ($enum as $k => &$v) {
-			$message = __d($domain, $key . '.' . $k);
+		if (isset($this->_cached[$cache])) {
+			$enum = $this->_cached[$cache];
 
-			// Only use message if a translation exists
-			if ($message !== $key . '.' . $k) {
-				$v = $message;
+		} else {
+			foreach ($enum as $k => &$v) {
+				$message = __d($domain, $key . '.' . $k);
+
+				// Only use message if a translation exists
+				if ($message !== $key . '.' . $k) {
+					$v = $message;
+				}
 			}
 
-			if ($value !== null && $value == $k) {
-				return $v;
-			}
+			$this->_cached[$cache] = $enum;
 		}
 
-		// Invalid value used
-		if ($value) {
-			return null;
+		// Filter down by value
+		if ($value !== null) {
+			return isset($enum[$value]) ? $enum[$value] : null;
 		}
 
 		return $enum;
