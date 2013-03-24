@@ -1,4 +1,4 @@
-# Utility v1.4.0-rc4 #
+# Utility v1.4.0-rc5 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
@@ -33,7 +33,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 * Filterable - Apply automatic filters and escaping to fields
 * Sluggable - Generate a slug based off another field
 * SpamBlocker - Validates comments against a point system and flags as spam
-* Validateable - Allows for multiple sets of validation rules
+* Validateable - Allows for multiple sets of validation rules as well as message translation
 
 **Datasources**
 * Feed - RSS, RDF, Atom and XML parser through the model layer
@@ -42,6 +42,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 * Breadcrumb - Basic breadcrumb and sitemap generation
 * OpenGraph - Generate meta tags for the OpenGraph protocol
 * Decoda - BBcode markup parsing with the Decoda library
+* Utility - Provides utility helper methods that integrate with the plugins other classes
 
 **Shells**
 * CacheKill - Clear cache from the command line
