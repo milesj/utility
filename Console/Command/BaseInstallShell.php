@@ -475,7 +475,9 @@ abstract class BaseInstallShell extends AppShell {
 	 */
 	public function setDbConfig($config) {
 		$this->dbConfig = $config;
+
 		$this->db = ConnectionManager::getDataSource($config);
+		$this->db->cacheSources = false;
 
 		return $this;
 	}

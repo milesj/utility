@@ -179,12 +179,13 @@ class EnumerableBehavior extends ModelBehavior {
 	 * @return mixed
 	 */
 	public function afterFind(Model $model, $results, $primary = true) {
-		if (!$this->format || ($model->id && !$this->onUpdate)) {
+		$alias = $model->alias;
+
+		if (!$this->format || ($model->id && !$this->onUpdate) || empty($this->_enums[$alias])) {
 			return $results;
 		}
 
 		if ($results) {
-			$alias = $model->alias;
 			$enum = $this->_enums[$alias];
 
 			foreach ($results as &$result) {
