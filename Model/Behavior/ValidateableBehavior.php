@@ -38,7 +38,6 @@ class ValidateableBehavior extends ModelBehavior {
 	 *
 	 * 	defaultSet		- The default validation set to use if none defined
 	 * 	resetAfter		- Should Model::$validate be reset after validation
-	 * 	localeDomain 	- Pass all validation messages through this locale domain for translation
 	 * 	useDefaults 	- Use default messages for every validation rule
 	 *
 	 * @var array
@@ -46,7 +45,6 @@ class ValidateableBehavior extends ModelBehavior {
 	protected $_defaults = array(
 		'defaultSet' => 'default',
 		'resetAfter' => true,
-		'localeDomain' => 'default',
 		'useDefaults' => true
 	);
 
@@ -128,11 +126,6 @@ class ValidateableBehavior extends ModelBehavior {
 		$rules = $model->validations[$set];
 		$settings = $this->settings[$model->alias];
 
-		// Translate present messages first
-		if ($settings['localeDomain']) {
-			$rules = $this->_translateRules($model, $rules);
-		}
-
 		// Add default messages second
 		if ($settings['useDefaults']) {
 			$rules = $this->_applyMessages($model, $rules);
@@ -154,7 +147,7 @@ class ValidateableBehavior extends ModelBehavior {
 	 * @return bool
 	 */
 	public function invalid(Model $model, $field, $message, $params = array()) {
-		$model->invalidate($field, $this->_translate($model, $message, $params));
+		$model->invalidate($field, __d($model->validationDomain ?: 'default', $message, $params));
 
 		return false;
 	}
@@ -202,65 +195,25 @@ class ValidateableBehavior extends ModelBehavior {
 				$rules[$key] = $this->_applyMessages($model, $value);
 
 			// Collapsed rules
-			} else if (isset($this->_messages[$value])) {
+			} else if (isset($this->_messages[$value]) && $key !== 'rule') {
 				$rules[$key] = array(
 					$value => array(
 						'rule' => $value,
-						'message' => $this->_translate($model, $this->_messages[$value])
+						'message' => $this->_messages[$value]
 					)
 				);
 
 			// Missing message
 			} else if ($key === 'rule') {
 				$rule = $value;
-				$params = array();
 
 				if (is_array($rule)) {
-					$params = $rule;
 					$rule = array_shift($params);
 				}
 
 				if (isset($this->_messages[$rule]) && empty($rules['message'])) {
-					$rules['message'] = $this->_translate($model, $this->_messages[$rule], $params);
+					$rules['message'] = $this->_messages[$rule];
 				}
-			}
-		}
-
-		return $rules;
-	}
-
-	/**
-	 * Translate a message if the domain is set, else fallback and parse in params.
-	 *
-	 * @param Model $model
-	 * @param string $message
-	 * @param array $params
-	 * @return string
-	 */
-	protected function _translate(Model $model, $message, $params = array()) {
-		if ($domain = $this->settings[$model->alias]['localeDomain']) {
-			$message = __d($domain, $message, $params);
-		} else {
-			$message = vsprintf($message, $params);
-		}
-
-		return $message;
-	}
-
-	/**
-	 * Translate rule messages by passing them through localization.
-	 *
-	 * @param Model $model
-	 * @param array $rules
-	 * @return array
-	 */
-	protected function _translateRules(Model $model, array $rules) {
-		foreach ($rules as $key => $value) {
-			if (is_array($value)) {
-				$rules[$key] = $this->_translateRules($model, $value);
-
-			} else if ($key === 'message') {
-				$rules[$key] = $this->_translate($model, $value);
 			}
 		}
 
