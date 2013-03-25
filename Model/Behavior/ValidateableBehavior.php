@@ -39,7 +39,7 @@ class ValidateableBehavior extends ModelBehavior {
 	 * 	defaultSet		- The default validation set to use if none defined
 	 * 	resetAfter		- Should Model::$validate be reset after validation
 	 * 	localeDomain 	- Pass all validation messages through this locale domain for translation
-	 * 	useDefaultMessages - Use default messages for every validation rule
+	 * 	useDefaults 	- Use default messages for every validation rule
 	 *
 	 * @var array
 	 */
@@ -47,7 +47,7 @@ class ValidateableBehavior extends ModelBehavior {
 		'defaultSet' => 'default',
 		'resetAfter' => true,
 		'localeDomain' => 'default',
-		'useDefaultMessages' => true
+		'useDefaults' => true
 	);
 
 	/**
@@ -102,13 +102,13 @@ class ValidateableBehavior extends ModelBehavior {
 		$this->settings[$model->alias] = $settings;
 
 		// Store the default model validate set
-		if (!empty($model->validate)) {
+		if ($model->validate) {
 			if (empty($model->validations)) {
 				$model->validations = array();
 			}
 
 			$model->validations[$settings['defaultSet']] = $model->validate;
-			$model->validate = null;
+			$model->validate = array();
 		}
 	}
 
@@ -134,11 +134,12 @@ class ValidateableBehavior extends ModelBehavior {
 		}
 
 		// Add default messages second
-		if ($settings['useDefaultMessages']) {
+		if ($settings['useDefaults']) {
 			$rules = $this->_applyMessages($model, $rules);
 		}
 
-		$model->validate = $rules;
+		// Merge in case there are other behaviors modifying the rules
+		$model->validate = Hash::merge($model->validate, $rules);
 
 		return $model;
 	}
@@ -200,6 +201,16 @@ class ValidateableBehavior extends ModelBehavior {
 			if (is_array($value)) {
 				$rules[$key] = $this->_applyMessages($model, $value);
 
+			// Collapsed rules
+			} else if (isset($this->_messages[$value])) {
+				$rules[$key] = array(
+					$value => array(
+						'rule' => $value,
+						'message' => $this->_translate($model, $this->_messages[$value])
+					)
+				);
+
+			// Missing message
 			} else if ($key === 'rule') {
 				$rule = $value;
 				$params = array();
