@@ -40,21 +40,7 @@ class DecodaHelper extends AppHelper {
 		$settings = $settings + Configure::read('Decoda.config');
 
 		$locale = Configure::read('Config.language') ?: $settings['locale'];
-		$localeMap = array(
-			'eng' => 'en-us',
-			'esp' => 'es-mx',
-			'fre' => 'fr-fr',
-			'ita' => 'it-it',
-			'deu' => 'de-de',
-			'swe' => 'sv-se',
-			'gre' => 'el-gr',
-			'bul' => 'bg-bg',
-			'rus' => 'ru-ru',
-			'chi' => 'zh-cn',
-			'jpn' => 'ja-jp',
-			'kor' => 'ko-kr',
-			'ind' => 'id-id'
-		);
+		$localeMap = Configure::read('Decoda.locales');
 
 		unset($settings['locale']);
 
@@ -87,14 +73,14 @@ class DecodaHelper extends AppHelper {
 
 		} else {
 			if ($filters = $settings['filters']) {
-				foreach ($filters as $filter) {
+				foreach ((array) $filters as $filter) {
 					$filter = sprintf('\Decoda\Filter\%sFilter', $filter);
 					$decoda->addFilter(new $filter());
 				}
 			}
 
 			if ($hooks = $settings['hooks']) {
-				foreach ($hooks as $hook) {
+				foreach ((array) $hooks as $hook) {
 					$hook = sprintf('\Decoda\Hook\%sHook', $hook);
 					$decoda->addHook(new $hook());
 				}

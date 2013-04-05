@@ -32,13 +32,18 @@ Configure::write('Decoda.config', array(
  */
 Configure::write('Decoda.locales', array(
 	'eng' => 'en-us',
-	'spa' => 'es-mx',
-	'swe' => 'sv-se',
-	'deu' => 'de-de',
+	'esp' => 'es-mx',
 	'fre' => 'fr-fr',
+	'ita' => 'it-it',
+	'deu' => 'de-de',
+	'swe' => 'sv-se',
+	'gre' => 'el-gr',
+	'bul' => 'bg-bg',
 	'rus' => 'ru-ru',
-	'ind' => 'id-id',
-	'bul' => 'bg-bg'
+	'chi' => 'zh-cn',
+	'jpn' => 'ja-jp',
+	'kor' => 'ko-kr',
+	'ind' => 'id-id'
 ));
 
 /**
