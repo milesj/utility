@@ -19,7 +19,7 @@
 		"php": ">=5.3.0",
 		"ext-mbstring": "*",
 		"composer/installers": "*",
-		"mjohnson/decoda": "5.*",
+		"mjohnson/decoda": "6.*",
 		"titon/utility": "*"
 	},
 	"support": {
