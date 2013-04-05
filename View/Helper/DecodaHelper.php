@@ -63,10 +63,14 @@ class DecodaHelper extends AppHelper {
 			->whitelist($settings['whitelist'])
 			->blacklist($settings['blacklist']);
 
-		if ($settings['paths']) {
-			foreach ((array) $settings['paths'] as $path) {
+		if ($paths = $settings['paths']) {
+			foreach ((array) $paths as $path) {
 				$decoda->addPath($path);
 			}
+		}
+
+		if ($messages = $settings['messages']) {
+			$decoda->addMessages(new \Decoda\Loader\DataLoader($messages));
 		}
 
 		// Set locale

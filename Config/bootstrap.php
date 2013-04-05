@@ -23,7 +23,8 @@ Configure::write('Decoda.config', array(
 	'blacklist' => array(),
 	'helpers' => array('Time', 'Html', 'Text'),
 	'filters' => array(),
-	'hooks' => array()
+	'hooks' => array(),
+	'messages' => array()
 ));
 
 /**

@@ -46,7 +46,7 @@ class CakeEngine extends AbstractEngine {
 	 * @throws \Exception
 	 */
 	public function render(array $tag, $content) {
-		$setup = $this->getFilter()->tag($tag['tag']);
+		$setup = $this->getFilter()->getTag($tag['tag']);
 
 		$vars = $tag['attributes'];
 		$vars['filter'] = $this->getFilter();
