@@ -1,4 +1,4 @@
-# Utility v1.4.0-rc5 #
+# Utility v1.4.0 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
@@ -11,8 +11,8 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 
 ## Dependencies ##
 
-* Decoda - https://github.com/milesj/Decoda
-* Titon.Utility - https://github.com/titon/Titon.Utility
+* Decoda - https://github.com/milesj/Decoda (DecodaHelper)
+* Titon.Utility - https://github.com/titon/Titon.Utility (AjaxHandlerComponent, FeedSource)
 
 ## Libraries ##
 
