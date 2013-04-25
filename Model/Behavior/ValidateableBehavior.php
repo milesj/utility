@@ -192,7 +192,9 @@ class ValidateableBehavior extends ModelBehavior {
 	protected function _applyMessages(Model $model, array $rules) {
 		foreach ($rules as $key => $value) {
 			if (is_array($value)) {
-				$rules[$key] = $this->_applyMessages($model, $value);
+				if ($key !== 'rule') {
+					$rules[$key] = $this->_applyMessages($model, $value);
+				}
 
 			// Collapsed rules
 			} else if (isset($this->_messages[$value]) && $key !== 'rule') {
