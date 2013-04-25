@@ -37,6 +37,7 @@ class SitemapController extends Controller {
 			}
 
 			$instance = new $controller($this->request, $this->response);
+			$instance->constructClasses();
 
 			if (method_exists($instance, '_generateSitemap')) {
 				if ($data = $instance->_generateSitemap()) {
