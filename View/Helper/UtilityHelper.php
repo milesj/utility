@@ -10,6 +10,13 @@ App::uses('AppHelper', 'View/Helper');
 class UtilityHelper extends AppHelper {
 
 	/**
+	 * Helpers.
+	 *
+	 * @var array
+	 */
+	public $helpers = array('Html');
+
+	/**
 	 * Cached data for the current request.
 	 *
 	 * @var array
@@ -65,6 +72,41 @@ class UtilityHelper extends AppHelper {
 		}
 
 		return $enum;
+	}
+
+	/**
+	 * Render out a gravatar thumbnail based on an email.
+	 *
+	 * @param string $email
+	 * @param array $options
+	 * @param array $attributes
+	 * @return string
+	 */
+	public function gravatar($email, array $options = array(), array $attributes = array()) {
+		$options = $options + array(
+			'default' => 'mm',
+			'size' => 80,
+			'rating' => 'g',
+			'hash' => 'md5',
+			'secure' => env('HTTPS')
+		);
+
+		$email = Security::hash(strtolower(trim($email)), $options['hash']);
+		$query = array();
+
+		if ($options['secure']) {
+			$image = 'https://secure.gravatar.com/avatar/' . $email;
+		} else {
+			$image = 'http://www.gravatar.com/avatar/' . $email;
+		}
+
+		foreach (array('default' => 'd', 'size' => 's', 'rating' => 'r') as $key => $param) {
+			$query[] = $param . '=' . urlencode($options[$key]);
+		}
+
+		$image .= '?' . implode('&amp;', $query);
+
+		return $this->Html->image($image, $attributes);
 	}
 
 }
