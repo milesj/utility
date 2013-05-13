@@ -109,6 +109,11 @@ class SpamBlockerBehavior extends ModelBehavior {
 		$data = $model->data[$model->alias];
 		$points = 0;
 
+		// Updating record, so leave it alone
+		if (!empty($data[$model->primaryKey]) || $model->id) {
+			return true;
+		}
+
 		if ($data) {
 			$website = $data[$columnMap['website']];
 			$content = $data[$columnMap['content']];
