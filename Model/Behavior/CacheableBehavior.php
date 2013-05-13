@@ -399,6 +399,7 @@ class CacheableBehavior extends ModelBehavior {
 	 */
 	public function getAll(Model $model) {
 		return $model->find('all', array(
+			'order' => array($model->alias . '.' . $model->displayField => 'ASC'),
 			'cache' => $model->alias . '::getAll',
 			'cacheExpires' => $this->getExpiration($model)
 		));
@@ -412,6 +413,7 @@ class CacheableBehavior extends ModelBehavior {
 	 */
 	public function getList(Model $model) {
 		return $model->find('list', array(
+			'order' => array($model->alias . '.' . $model->displayField => 'ASC'),
 			'cache' => $model->alias . '::getList',
 			'cacheExpires' => $this->getExpiration($model)
 		));
