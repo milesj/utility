@@ -1,1 +1,1 @@
-<pre class="decoda-code<?php if (!empty($lang)) { echo ' ' . $lang; } ?>"<?php if (!empty($hl)) { ?> data-highlight="<?php echo $hl; ?>"<?php } ?>><code><?php echo $content; ?></code></pre>
+<pre class="decoda-code<?php if (!empty($lang)) { echo ' ' . $classPrefix . $lang; } ?>"<?php if (!empty($hl)) { printf(' %s="%s"', $highlightAttribute, $hl); } ?>><code><?php echo $content; ?></code></pre>
