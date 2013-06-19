@@ -95,6 +95,8 @@ abstract class BaseInstallShell extends AppShell {
 	 * @return void
 	 */
 	public function main() {
+		$this->stdout->styles('success', array('text' => 'green'));
+
 		$this->hr(1);
 		$this->out(sprintf('%s Steps:', $this->name));
 
@@ -129,12 +131,12 @@ abstract class BaseInstallShell extends AppShell {
 			$this->out('Available database configurations:');
 
 			foreach ($dbConfigs as $i => $db) {
-				$this->out(sprintf('[%s] <comment>%s</comment>', $i, $db));
+				$this->out(sprintf('[%s] <info>%s</info>', $i, $db));
 			}
 
 			$this->out();
 
-			$answer = $this->in('<question>Which database should the queries be executed in?</question>', array_keys($dbConfigs));
+			$answer = $this->in('Which database should the queries be executed in?', array_keys($dbConfigs));
 
 			if (isset($dbConfigs[$answer])) {
 				$this->setDbConfig($dbConfigs[$answer]);
@@ -143,9 +145,9 @@ abstract class BaseInstallShell extends AppShell {
 			}
 		}
 
-		$this->out(sprintf('Database Config: <comment>%s</comment>', $this->dbConfig));
+		$this->out(sprintf('Database Config: <info>%s</info>', $this->dbConfig));
 
-		$answer = strtoupper($this->in('<question>Is this correct?</question>', array('Y', 'N')));
+		$answer = strtoupper($this->in('Is this correct?', array('Y', 'N')));
 
 		if ($answer === 'N') {
 			$this->dbConfig = null;
@@ -158,7 +160,7 @@ abstract class BaseInstallShell extends AppShell {
 			return false;
 		}
 
-		$this->out('<info>Database check successful, proceeding...</info>');
+		$this->out('<success>Database check successful, proceeding...</success>');
 		return true;
 	}
 
@@ -169,8 +171,8 @@ abstract class BaseInstallShell extends AppShell {
 	 */
 	public function checkRequiredTables() {
 		if ($this->requiredTables) {
-			$this->out(sprintf('The following tables are required: <comment>%s</comment>', implode(', ', $this->requiredTables)));
-			$this->out('<info>Checking tables...</info>');
+			$this->out(sprintf('The following tables are required: <info>%s</info>', implode(', ', $this->requiredTables)));
+			$this->out('<success>Checking tables...</success>');
 
 			$tables = $this->db->listSources();
 			$missing = array();
@@ -187,7 +189,7 @@ abstract class BaseInstallShell extends AppShell {
 			}
 		}
 
-		$this->out('<info>Table status good, proceeding...</info>');
+		$this->out('<success>Table status good, proceeding...</success>');
 		return true;
 	}
 
@@ -198,19 +200,19 @@ abstract class BaseInstallShell extends AppShell {
 	*/
 	public function checkTablePrefix() {
 		if (!$this->tablePrefix) {
-			$this->setTablePrefix($this->in('<question>What table prefix would you like to use?</question>'));
+			$this->setTablePrefix($this->in('What table prefix would you like to use?'));
 		}
 
-		$this->out(sprintf('Table Prefix: <comment>%s</comment>', $this->tablePrefix));
+		$this->out(sprintf('Table Prefix: <info>%s</info>', $this->tablePrefix));
 
-		$answer = strtoupper($this->in('<question>Is this correct?</question>', array('Y', 'N')));
+		$answer = strtoupper($this->in('Is this correct?', array('Y', 'N')));
 
 		if ($answer === 'N') {
 			$this->tablePrefix = null;
 			$this->checkTablePrefix();
 		}
 
-		$this->out('<info>Table prefix set, proceeding...</info>');
+		$this->out('<success>Table prefix set, proceeding...</success>');
 		return true;
 	}
 
@@ -221,12 +223,12 @@ abstract class BaseInstallShell extends AppShell {
 	 */
 	public function checkUsersModel() {
 		if (!$this->usersModel) {
-			$this->setUsersModel($this->in('<question>What is the name of your users model?</question>'));
+			$this->setUsersModel($this->in('What is the name of your users model?'));
 		}
 
-		$this->out(sprintf('Users Model: <comment>%s</comment>', $this->usersModel));
+		$this->out(sprintf('Users Model: <info>%s</info>', $this->usersModel));
 
-		$answer = strtoupper($this->in('<question>Is this correct?</question>', array('Y', 'N')));
+		$answer = strtoupper($this->in('Is this correct?', array('Y', 'N')));
 
 		if ($answer === 'N') {
 			$this->usersModel = null;
@@ -241,12 +243,12 @@ abstract class BaseInstallShell extends AppShell {
 	 */
 	public function checkUsersTable() {
 		if (!$this->usersTable) {
-			$this->setUsersTable($this->in('<question>What is the name of your users table?</question>'));
+			$this->setUsersTable($this->in('What is the name of your users table?'));
 		}
 
-		$this->out(sprintf('Users Table: <comment>%s</comment>', $this->usersTable));
+		$this->out(sprintf('Users Table: <info>%s</info>', $this->usersTable));
 
-		$answer = strtoupper($this->in('<question>Is this correct?</question>', array('Y', 'N')));
+		$answer = strtoupper($this->in('Is this correct?', array('Y', 'N')));
 
 		if ($answer === 'N') {
 			$this->usersTable = null;
@@ -257,7 +259,7 @@ abstract class BaseInstallShell extends AppShell {
 
 		$this->checkUsersModel();
 
-		$this->out('<info>Users table set, proceeding...</info>');
+		$this->out('<success>Users table set, proceeding...</success>');
 		return true;
 	}
 
@@ -267,7 +269,7 @@ abstract class BaseInstallShell extends AppShell {
 	 * @return bool
 	 */
 	public function createTables() {
-		$answer = strtoupper($this->in('<question>Existing tables will be deleted, continue?</question>', array('Y', 'N')));
+		$answer = strtoupper($this->in('Existing tables will be deleted, continue?', array('Y', 'N')));
 
 		if ($answer === 'N') {
 			return false;
@@ -278,7 +280,7 @@ abstract class BaseInstallShell extends AppShell {
 		$tables = array();
 
 		// Loop over schemas and execute queries
-		$this->out('<info>Creating tables...</info>');
+		$this->out('<success>Creating tables...</success>');
 
 		foreach ($schemas as $schema) {
 			$table = $this->tablePrefix . str_replace('.sql', '', basename($schema));
@@ -299,7 +301,7 @@ abstract class BaseInstallShell extends AppShell {
 			return false;
 		}
 
-		$this->out('<info>Tables created successfully, proceeding...</info>');
+		$this->out('<success>Tables created successfully, proceeding...</success>');
 		return true;
 	}
 
@@ -378,7 +380,7 @@ abstract class BaseInstallShell extends AppShell {
 	 */
 	public function findUser() {
 		$model = ClassRegistry::init($this->usersModel);
-		$id = trim($this->in('<question>User ID:</question>'));
+		$id = trim($this->in('User ID:'));
 
 		if (!$id) {
 			$this->out('<error>Invalid ID, please try again</error>');
@@ -411,7 +413,7 @@ abstract class BaseInstallShell extends AppShell {
 
 		switch ($field) {
 			case 'username':
-				$username = trim($this->in('<question>Username:</question>'));
+				$username = trim($this->in('Username:'));
 
 				if (!$username) {
 					$username = $this->getFieldInput($field);
@@ -431,7 +433,7 @@ abstract class BaseInstallShell extends AppShell {
 			break;
 
 			case 'email':
-				$email = trim($this->in('<question>Email:</question>'));
+				$email = trim($this->in('Email:'));
 
 				if (!$email) {
 					$email = $this->getFieldInput($field);
@@ -456,7 +458,7 @@ abstract class BaseInstallShell extends AppShell {
 
 			// Password, others...
 			default:
-				$value = trim($this->in(sprintf('<question>%s:</question>', Inflector::humanize($field))));
+				$value = trim($this->in(sprintf('%s:', Inflector::humanize($field))));
 
 				if (!$value) {
 					$value = $this->getFieldInput($field);
@@ -584,7 +586,7 @@ abstract class BaseInstallShell extends AppShell {
 			if ($counter < $step) {
 				$this->out('[x] ' . $title);
 			} else {
-				$this->out(sprintf('[%s] <comment>%s</comment>', $counter, $title));
+				$this->out(sprintf('[%s] <info>%s</info>', $counter, $title));
 			}
 
 			$counter++;

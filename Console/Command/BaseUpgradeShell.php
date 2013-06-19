@@ -48,7 +48,7 @@ abstract class BaseUpgradeShell extends BaseInstallShell {
 	 * @return bool
 	 */
 	public function to($version) {
-		$this->out(sprintf('<info>Upgrading to %s...</info>', $version));
+		$this->out(sprintf('<success>Upgrading to %s...</success>', $version));
 
 		$schema = sprintf('%s/Config/Schema/Upgrade/%s.sql', CakePlugin::path($this->plugin), $version);
 
@@ -68,7 +68,7 @@ abstract class BaseUpgradeShell extends BaseInstallShell {
 		if ($this->executeSchema($schema, false)) {
 			$this->complete[] = $version;
 
-			$this->out(sprintf('<info>Upgrade to %s complete</info>', $version));
+			$this->out(sprintf('<success>Upgrade to %s complete</success>', $version));
 			$this->versions();
 		}
 
@@ -88,7 +88,7 @@ abstract class BaseUpgradeShell extends BaseInstallShell {
 				if (in_array($version, $this->complete)) {
 					$this->out('[x] ' . $title);
 				} else {
-					$this->out(sprintf('[%s] <comment>%s</comment>', $version, $title));
+					$this->out(sprintf('[%s] <info>%s</info>', $version, $title));
 					$versions[] = $version;
 				}
 			}
@@ -101,7 +101,7 @@ abstract class BaseUpgradeShell extends BaseInstallShell {
 		$this->out();
 
 		$versions[] = 'E';
-		$answer = strtoupper($this->in('<question>Which version do you want to upgrade to?</question>', $versions));
+		$answer = strtoupper($this->in('Which version do you want to upgrade to?', $versions));
 
 		if ($answer === 'E') {
 			exit();
