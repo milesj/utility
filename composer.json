@@ -18,9 +18,11 @@
 	"require": {
 		"php": ">=5.3.0",
 		"ext-mbstring": "*",
-		"composer/installers": "*",
-		"mjohnson/decoda": "6.*",
-		"titon/utility": "*"
+		"composer/installers": "*"
+	},
+	"suggest": {
+		"mjohnson/decoda": "Enable Decoda for BBCode parsing in the DecodaHelper",
+		"titon/utility": "Enable Titon to parse feeds in FeedSource and process AJAX in the AjaxHandlerComponent"
 	},
 	"support": {
 		"source": "https://github.com/milesj/Utility"
