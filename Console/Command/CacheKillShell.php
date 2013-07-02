@@ -16,30 +16,74 @@ Configure::write('debug', 2);
 class CacheKillShell extends Shell {
 
 	/**
-	 * Gather params and clear cache.
-	 *
-	 * @return void
+	 * Display help info.
 	 */
 	public function main() {
-		$this->out('Shell: CacheKill v2.0.0');
-		$this->out('About: Deletes cached entries within a configuration');
-		$this->hr(1);
+		$this->out($this->OptionParser->help());
+	}
 
+	/**
+	 * Delete APC cache.
+	 */
+	public function apc() {
+		if (!extension_loaded('apc')) {
+			$this->err('<error>APC extension not loaded</error>');
+			return;
+		}
+
+		apc_clear_cache();
+		apc_clear_cache('user');
+		apc_clear_cache('opcode');
+
+		$this->out('<info>APC cache cleared!</info>');
+	}
+
+	/**
+	 * Delete CakePHP cache.
+	 */
+	public function core() {
 		$key = isset($this->params['key']) ? $this->params['key'] : null;
-		$check = isset($this->params['check']) ? (bool) $this->params['check'] : false;
 		$config = isset($this->params['config']) ? $this->params['config'] : 'default';
 
 		if ($key) {
-			$this->out(sprintf('Killing %s in %s...', $key, $config));
+			$this->out(sprintf('Clearing %s in %s...', $key, $config));
 			Cache::delete($key, $config);
 
 		} else {
-			$this->out(sprintf('Killing all in %s...', $config));
-			Cache::clear($check, $config);
+			$this->out(sprintf('Clearing all in %s...', $config));
+			Cache::clear(false, $config);
 		}
 
-		$this->hr(1);
-		$this->out('Cache murdered!');
+		$this->out('<info>Cache cleared!</info>');
+	}
+
+	/**
+	 * Add sub-commands.
+	 *
+	 * @return ConsoleOptionParser
+	 */
+	public function getOptionParser() {
+		$parser = parent::getOptionParser();
+
+		$parser->addSubcommand('core', array(
+			'help' => 'Delete all cache within CakePHP',
+			'parser' => array(
+				'description' => 'This command will clear all cache in CakePHP using the Cache engine settings.',
+				'options' => array(
+					'config' => array('short' => 'c', 'help' => 'Cache Config', 'default' => 'default'),
+					'key' => array('short' => 'k', 'help' => 'Cache Key', 'default' => '')
+				)
+			)
+		));
+
+		$parser->addSubcommand('apc', array(
+			'help' => 'Delete all cache within APC',
+			'parser' => array(
+				'description' => 'This command will clear all cache in APC, including user, system and opcode caches.'
+			)
+		));
+
+		return $parser;
 	}
 
 }
