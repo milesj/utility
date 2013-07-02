@@ -1,14 +1,6 @@
-/**
- * Decoda - A lightweight textarea editor with toolbar functionality for the Decoda markup language.
- *
- * @copyright	2013
- * @link		http://milesj.me/code/mootools/decoda
- * @license		MIT
- * @authors		Miles Johnson <http://milesj.me>
- *
- * @version		1.2.0
- * @package		css/theme
+/*!
+ * Decoda v1.3.0
+ * Copyright 2012, Miles Johnson - http://milesj.me/code/mootools/decoda
+ * MIT - https://github.com/milesj/Decoda.js/blob/master/license.md
  */
-
-/* css/decoda-theme.css */
-.decoda-toolbars{border:1px solid #e1e1e1;border-bottom-color:#dadada;box-shadow:0 1px 0 #BBBBBB;border-radius:2px;background-image:-o-linear-gradient(center top, #f9f9f9 0%, #e1e1e1 100%);background-image:-ms-linear-gradient(center top, #f9f9f9 0%, #e1e1e1 100%);background-image:-moz-linear-gradient(center top, #f9f9f9 0%, #e1e1e1 100%);background-image:-webkit-linear-gradient(center top, #f9f9f9 0%, #e1e1e1 100%);background-image:-webkit-gradient(linear, center top, center bottom, color-stop(0, #f9f9f9), color-stop(1, #e1e1e1));background-image:linear-gradient(center top, #f9f9f9 0%, #e1e1e1 100%)}.decoda-toolbars .decoda-toolbar{float:left;display:block;border-left:1px solid #D7D7D7;border-right:1px solid #EEEEEE}.decoda-toolbars .decoda-toolbar:first-child{border-left:0}.decoda-toolbars .decoda-toolbar:last-child{border-right:0}.decoda-toolbars .decoda-toolbar > li{float:left;display:block}.decoda-toolbars button{margin:0;border:0;padding:5px;background:none;display:block;cursor:pointer}.decoda-toolbars button:hover{background-image:-o-linear-gradient(center top, #fefefe 0%, #eae9e9 100%);background-image:-ms-linear-gradient(center top, #fefefe 0%, #eae9e9 100%);background-image:-moz-linear-gradient(center top, #fefefe 0%, #eae9e9 100%);background-image:-webkit-linear-gradient(center top, #fefefe 0%, #eae9e9 100%);background-image:-webkit-gradient(linear, center top, center bottom, color-stop(0, #fefefe), color-stop(1, #eae9e9));background-image:linear-gradient(center top, #fefefe 0%, #eae9e9 100%)}.decoda-toolbars button:focus{background:#fefefe}.decoda-toolbars .decoda-menu{border:1px solid #BBBBBB;background:#f9f9f9;border-radius:2px;box-shadow:none}.decoda-toolbars .decoda-menu a:hover{background:#eae9e9}
+.decoda-toolbars{border:1px solid #e1e1e1;border-bottom-color:#dadada;box-shadow:0 1px 0 #BBB;border-radius:2px;background-image:-o-linear-gradient(center top,#f9f9f9 0,#e1e1e1 100%);background-image:-ms-linear-gradient(center top,#f9f9f9 0,#e1e1e1 100%);background-image:-moz-linear-gradient(center top,#f9f9f9 0,#e1e1e1 100%);background-image:-webkit-linear-gradient(center top,#f9f9f9 0,#e1e1e1 100%);background-image:-webkit-gradient(linear,center top,center bottom,color-stop(0,#f9f9f9),color-stop(1,#e1e1e1));background-image:linear-gradient(center top,#f9f9f9 0,#e1e1e1 100%);background-color:#f9f9f9}.decoda-toolbars .decoda-toolbar{float:left;display:block;border-left:1px solid #D7D7D7;border-right:1px solid #EEE}.decoda-toolbars .decoda-toolbar:first-child{border-left:0}.decoda-toolbars .decoda-toolbar:last-child{border-right:0}.decoda-toolbars .decoda-toolbar>li{float:left;display:block}.decoda-toolbars button{margin:0;border:0;padding:5px;background:0;display:block;cursor:pointer}.decoda-toolbars button:hover{background-image:-o-linear-gradient(center top,#fefefe 0,#eae9e9 100%);background-image:-ms-linear-gradient(center top,#fefefe 0,#eae9e9 100%);background-image:-moz-linear-gradient(center top,#fefefe 0,#eae9e9 100%);background-image:-webkit-linear-gradient(center top,#fefefe 0,#eae9e9 100%);background-image:-webkit-gradient(linear,center top,center bottom,color-stop(0,#fefefe),color-stop(1,#eae9e9));background-image:linear-gradient(center top,#fefefe 0,#eae9e9 100%);background-color:#fefefe}.decoda-toolbars button:focus{background:#fefefe}.decoda-toolbars .decoda-menu{border:1px solid #BBB;background:#f9f9f9;border-radius:2px;box-shadow:none}.decoda-toolbars .decoda-menu a:hover{background:#eae9e9}
