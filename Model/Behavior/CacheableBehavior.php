@@ -47,6 +47,7 @@ class CacheableBehavior extends ModelBehavior {
 	 * 	expires			- Default expiration time for all cache items
 	 * 	prefix			- String to prepend to all cache keys
 	 * 	appendKey		- Should we append the cache key and expires to the results
+	 * 	storeEmpty		- Will cache empty results
 	 * 	methodKeys		- Mapping of primary cache keys to methods
 	 * 	events			- Toggle cache reset events for specific conditions
 	 * 	resetHooks		- Mapping of cache keys and arguments to reset with
@@ -59,6 +60,7 @@ class CacheableBehavior extends ModelBehavior {
 		'expires' => '+5 minutes',
 		'prefix' => '',
 		'appendKey' => false,
+		'storeEmpty' => false,
 		'methodKeys' => array(
 			'getAll' => 'getAll',
 			'getList' => 'getList',
@@ -237,6 +239,8 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return mixed
 	 */
 	public function afterFind(Model $model, $results, $primary) {
+		$settings = $this->settings[$model->alias];
+
 		if ($this->_isCaching) {
 			$query = $this->_currentQuery;
 
@@ -248,12 +252,16 @@ class CacheableBehavior extends ModelBehavior {
 
 			// Write the new results if it has data
 			} else if ($results) {
-				if ($key = $this->settings[$model->alias]['appendKey']) {
+				if ($key = $settings['appendKey']) {
 					foreach ($results as &$result) {
 						$result[$key] = $query;
 					}
 				}
 
+				$this->writeCache($model, $query['key'], $results, $query['expires']);
+
+			// Store empty result sets
+			} else if ($settings['storeEmpty']) {
 				$this->writeCache($model, $query['key'], $results, $query['expires']);
 			}
 
