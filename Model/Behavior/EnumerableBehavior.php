@@ -171,6 +171,27 @@ class EnumerableBehavior extends ModelBehavior {
 	}
 
 	/**
+	 * Used for model validation to validate a value is within a certain field enum.
+	 *
+	 * @param Model $model
+	 * @param array $check
+	 * @param array $rule
+	 * @return bool
+	 */
+	public function validateEnum(Model $model, $check, $rule) {
+		$field = key($check);
+		$value = $check[$field];
+
+		if ($value === '' || $value === null || $value === false) {
+			return (bool) $rule['allowEmpty'];
+		}
+
+		$enum = $this->enum($model, $field);
+
+		return isset($enum[$value]);
+	}
+
+	/**
 	 * Format the results by replacing all enum fields with their respective value replacement.
 	 *
 	 * @param Model $model
