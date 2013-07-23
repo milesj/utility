@@ -22,6 +22,7 @@ App::uses('ModelBehavior', 'Model');
  *			`name` VARCHAR(50) NOT NULL,
  *			`email` VARCHAR(50) NOT NULL,
  *			`website` VARCHAR(50) NOT NULL,
+ *			`ip` VARCHAR(50) NOT NULL,
  *			`content` TEXT NOT NULL,
  *			`created` DATETIME NULL DEFAULT NULL,
  *			`modified` DATETIME NULL DEFAULT NULL,
@@ -61,7 +62,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 		'keywords' => array(
 			'levitra', 'viagra', 'casino', 'sex', 'loan', 'finance', 'slots', 'debt', 'free', 'stock', 'debt',
 			'marketing', 'rates', 'ad', 'bankruptcy', 'homeowner', 'discreet', 'preapproved', 'unclaimed',
-			'email', 'click', 'unsubscribe', 'buy', 'sell', 'sales', 'earn'
+			'email', 'click', 'unsubscribe', 'buy', 'sell', 'sales', 'earn', 'cheap', 'sale'
 		),
 		'blacklist' => array('.html', '.info', '.de', '.pl', '.cn', '.ru', '.biz'),
 		'columnMap' => array(
@@ -74,7 +75,8 @@ class SpamBlockerBehavior extends ModelBehavior {
 			'slug'			=> 'slug',
 			'title'			=> 'title',
 			'status'		=> 'status',
-			'points'		=> 'points'
+			'points'		=> 'points',
+			'ip'			=> 'ip'
 		),
 		'statusMap' => array(
 			'pending'	=> 0,
@@ -118,6 +120,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 			$website = $data[$columnMap['website']];
 			$content = $data[$columnMap['content']];
 			$author = $data[$columnMap['author']];
+			$email = $data[$columnMap['email']];
 
 			// If referrer does not come from the originating domain
 			$referrer = env('HTTP_REFERER');
@@ -162,7 +165,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 
 			if ($comments) {
 				foreach ($comments as $comment) {
-					if ($comment[$model->alias][$columnMap['status']] == $statusMap['spam']) {
+					if (in_array($comment[$model->alias][$columnMap['status']], array($statusMap['spam'], $statusMap['deleted']))) {
 						--$points;
 					}
 
@@ -254,11 +257,33 @@ class SpamBlockerBehavior extends ModelBehavior {
 
 			// Random character match
 			// -1 point per 5 consecutive consonants
-			preg_match_all('/[^aAeEiIoOuU\s]{5,}+/i', $content, $matches);
-			$totalConsonants = count($matches[0]);
+			$totalMatches = preg_match_all('/[^aAeEiIoOuU\s]{5,}+/i', $content);
 
-			if ($totalConsonants > 0) {
-				$points = $points - $totalConsonants;
+			if ($totalMatches > 0) {
+				$points = $points - $totalMatches;
+			}
+
+			// Email mostly consonants
+			// -5 points
+			if (preg_match('/[^aAeEiIoOuU\s]{5,}+/i', strstr($email, '@', true))) {
+				$points = $points - 5;
+			}
+
+			// IP has been marked as spam before
+			// -1 point per filtered IP
+			if (!empty($data[$columnMap['ip']])) {
+				$blockedIPs = $model->find('count', array(
+					'conditions' => array(
+						$columnMap['ip'] => $data[$columnMap['ip']],
+						$columnMap['status'] => array($statusMap['spam'], $statusMap['deleted'])
+					),
+					'recursive' => -1,
+					'contain' => false
+				));
+
+				if ($blockedIPs > 0) {
+					$points = $points - $blockedIPs;
+				}
 			}
 		}
 
