@@ -6,6 +6,7 @@
  */
 
 App::uses('ModelBehavior', 'Model');
+App::uses('CakeEmail', 'Network/Email');
 
 /**
  * A CakePHP Behavior that moderates and validates comments to check for spam.
@@ -323,7 +324,7 @@ class SpamBlockerBehavior extends ModelBehavior {
 	 *
 	 * @param Model $model
 	 * @param array $data
-	 * @param array $status
+	 * @param int $status
 	 * @param int $points
 	 * @return void
 	 */
@@ -332,39 +333,63 @@ class SpamBlockerBehavior extends ModelBehavior {
 		$columnMap = $settings['columnMap'];
 
 		if ($settings['model'] && $settings['link'] && $settings['email']) {
-			$fields = array($columnMap['id'], $columnMap['title']);
+			$Article = ClassRegistry::init(Inflector::classify($settings['model']));
 
-			if ($settings['useSlug']) {
-				$fields[] = $columnMap['slug'];
-			}
-
-			// Get result from foreign model
-			$article = ClassRegistry::init(Inflector::classify($settings['model']));
-			$result = $article->find('first', array(
-				'fields' => $fields,
+			$result = $Article->find('first', array(
 				'conditions' => array($columnMap['id'] => $data[$columnMap['foreignKey']]),
 				'recursive' => -1,
 				'contain' => false
 			));
 
-			// Format the link
-			$link = str_replace('{id}', $result[$article->alias][$columnMap['id']], $settings['link']);
+			// Build variables
+			$link = str_replace('{id}', $result[$Article->alias][$columnMap['id']], $settings['link']);
 
 			if ($settings['useSlug']) {
-				$link = str_replace('{slug}', $result[$article->alias][$columnMap['slug']], $settings['link']);
+				$link = str_replace('{slug}', $result[$Article->alias][$columnMap['slug']], $settings['link']);
 			}
 
-			// Build message
-			$title = $result[$article->alias][$columnMap['title']];
-			$statuses = array_flip($settings['statusMap']);
-
-			$message  = sprintf("A new comment has been posted for: %s\n\n", $link);
-			$message .= sprintf("Name: %s <%s>\n", $data[$columnMap['author']], $data[$columnMap['email']]);
-			$message .= sprintf("Status: %s (%s points)\n", $statuses[$status], $points);
-			$message .= sprintf("Message:\n\n%s", $data[$columnMap['content']]);
+			$title = $result[$Article->alias][$columnMap['title']];
+			$email = $data[$columnMap['email']];
+			$author = $data[$columnMap['author']];
 
 			// Send email
-			mail($settings['email'], 'Comment Approval: ' . $title, $message, 'From: ' . $data[$columnMap['author']] . ' <' . $data[$columnMap['email']] . '>');
+			$Email = new CakeEmail();
+			$Email
+				->to($settings['email'])
+				->from(array($email => $author))
+				->subject('Comment Approval: ' . $title)
+				->helpers(array('Html', 'Time'))
+				->viewVars(array(
+					'settings' => $settings,
+					'article' => $result,
+					'comment' => $data,
+					'link' => $link,
+					'status' => $status,
+					'points' => $points
+				));
+
+			if (Configure::read('debug')) {
+				$Email->transport('Debug')->config(array('log' => true));
+			}
+
+			// Use a custom template
+			if (is_string($settings['sendEmail'])) {
+				$Email
+					->template($settings['sendEmail'])
+					->emailFormat('both')
+					->send();
+
+			// Send a simple message
+			} else {
+				$statuses = array_flip($settings['statusMap']);
+
+				$message  = sprintf("A new comment has been posted for: %s\n\n", $link);
+				$message .= sprintf("Name: %s <%s>\n", $author, $email);
+				$message .= sprintf("Status: %s (%s points)\n", $statuses[$status], $points);
+				$message .= sprintf("Message:\n\n%s", $data[$columnMap['content']]);
+
+				$Email->send($message);
+			}
 		}
 	}
 
