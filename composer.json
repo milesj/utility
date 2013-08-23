@@ -25,6 +25,6 @@
 		"titon/utility": "Enable Titon to parse feeds in FeedSource and process AJAX in the AjaxHandlerComponent"
 	},
 	"support": {
-		"source": "https://github.com/milesj/Utility"
+		"source": "https://github.com/milesj/utility"
 	}
 }
