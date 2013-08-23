@@ -343,14 +343,14 @@ class CacheableBehavior extends ModelBehavior {
 	 */
 	public function cache(Model $model, $keys, Closure $callback, $expires = null) {
 		if (Configure::read('Cache.disable')) {
-			return $callback($model);
+			return $callback($model, $keys, $expires);
 		}
 
 		$key = $this->cacheKey($model, $keys);
 		$results = $this->readCache($model, $key);
 
 		if (!$results) {
-			$results = $callback($model);
+			$results = $callback($model, $keys, $expires);
 
 			$this->writeCache($model, $key, $results, $expires);
 		}
