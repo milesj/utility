@@ -177,6 +177,7 @@ class CacheableBehavior extends ModelBehavior {
 		// Grab the cache key and expiration
 		$key = $query['cache'];
 		$expires = isset($query['cacheExpires']) ? $query['cacheExpires'] : null;
+		$forceRefresh = isset($query['cacheForceRefresh']) ? $query['cacheForceRefresh'] : null;
 
 		if ($key === true) {
 			$key = array($model->alias, md5(json_encode($query)));
@@ -197,22 +198,20 @@ class CacheableBehavior extends ModelBehavior {
 		$this->_isCaching = true;
 		$this->_currentQuery = array(
 			'key' => $key,
-			'expires' => $expires
+			'expires' => $expires,
+			'forceRefresh' => $forceRefresh
 		);
 
 		// Are results already cached?
 		$results = null;
 		
-		if(!isset($query['cacheForceRefresh']) || !$query['cacheForceRefresh']){
+		if(!$forceRefresh){
 			if (!empty($this->_cached[$key])) {
 				$results = $this->_cached[$key];
 
 			} else if ($fromCache = $this->readCache($model, $key)) {
 				$results = $fromCache;
 			}
-		}elseif(isset($this->_cached[$key])) {
-			// _cached is not always overwritten by updated results so best unset here
-			unset($this->_cached[$key]);
 		}
 
 		
@@ -251,7 +250,7 @@ class CacheableBehavior extends ModelBehavior {
 			$query = $this->_currentQuery;
 
 			// Pull from cache
-			if (!empty($this->_cached[$query['key']]) && (!isset($query['cacheForceRefresh']) || !$query['cacheForceRefresh'])) {
+			if (!empty($this->_cached[$query['key']]) && !$query['forceRefresh']) {
 				$model->useDbConfig = $this->_previousDbConfig;
 
 				$results = $this->_cached[$query['key']];
@@ -269,6 +268,9 @@ class CacheableBehavior extends ModelBehavior {
 			// Store empty result sets
 			} else if ($settings['storeEmpty']) {
 				$this->writeCache($model, $query['key'], $results, $query['expires']);
+			} else if ($query['forceRefresh']) {
+				// if forcing refresh, empty $results should just delete the cache if storeEmpty=false
+				$this->deleteCache($model, $query['key']);
 			}
 
 			$this->_isCaching = false;
