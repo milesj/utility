@@ -527,6 +527,9 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return boolean
 	 */
 	public function deleteCache(Model $model, $keys) {
+		if(isset($this->_cached[$this->cacheKey($model, $keys)])) {
+			unset($this->_cached[$this->cacheKey($model, $keys)]);
+		}
 		return Cache::delete($this->cacheKey($model, $keys), $this->settings[$model->alias]['cacheConfig']);
 	}
 
