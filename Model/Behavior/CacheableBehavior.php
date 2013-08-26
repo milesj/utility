@@ -210,7 +210,11 @@ class CacheableBehavior extends ModelBehavior {
 			} else if ($fromCache = $this->readCache($model, $key)) {
 				$results = $fromCache;
 			}
+		}elseif(isset($this->_cached[$key])) {
+			// _cached is not always overwritten by updated results so best unset here
+			unset($this->_cached[$key]);
 		}
+
 		
 		// Begin caching by replacing with ShimSource
 		if ($results) {
