@@ -202,14 +202,16 @@ class CacheableBehavior extends ModelBehavior {
 
 		// Are results already cached?
 		$results = null;
+		
+		if(!isset($query['cacheForceRefresh']) || !$query['cacheForceRefresh']){
+			if (!empty($this->_cached[$key])) {
+				$results = $this->_cached[$key];
 
-		if (!empty($this->_cached[$key])) {
-			$results = $this->_cached[$key];
-
-		} else if ($fromCache = $this->readCache($model, $key)) {
-			$results = $fromCache;
+			} else if ($fromCache = $this->readCache($model, $key)) {
+				$results = $fromCache;
+			}
 		}
-
+		
 		// Begin caching by replacing with ShimSource
 		if ($results) {
 			$this->_cached[$key] = $results;
@@ -245,7 +247,7 @@ class CacheableBehavior extends ModelBehavior {
 			$query = $this->_currentQuery;
 
 			// Pull from cache
-			if (!empty($this->_cached[$query['key']])) {
+			if (!empty($this->_cached[$query['key']]) && (!isset($query['cacheForceRefresh']) || !$query['cacheForceRefresh'])) {
 				$model->useDbConfig = $this->_previousDbConfig;
 
 				$results = $this->_cached[$query['key']];
