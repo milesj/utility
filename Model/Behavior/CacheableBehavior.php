@@ -177,6 +177,7 @@ class CacheableBehavior extends ModelBehavior {
 		// Grab the cache key and expiration
 		$key = $query['cache'];
 		$expires = isset($query['cacheExpires']) ? $query['cacheExpires'] : null;
+		$forceRefresh = isset($query['cacheForceRefresh']) ? $query['cacheForceRefresh'] : null;
 
 		if ($key === true) {
 			$key = array($model->alias, md5(json_encode($query)));
@@ -197,19 +198,23 @@ class CacheableBehavior extends ModelBehavior {
 		$this->_isCaching = true;
 		$this->_currentQuery = array(
 			'key' => $key,
-			'expires' => $expires
+			'expires' => $expires,
+			'forceRefresh' => $forceRefresh
 		);
 
 		// Are results already cached?
 		$results = null;
+		
+		if(!$forceRefresh){
+			if (!empty($this->_cached[$key])) {
+				$results = $this->_cached[$key];
 
-		if (!empty($this->_cached[$key])) {
-			$results = $this->_cached[$key];
-
-		} else if ($fromCache = $this->readCache($model, $key)) {
-			$results = $fromCache;
+			} else if ($fromCache = $this->readCache($model, $key)) {
+				$results = $fromCache;
+			}
 		}
 
+		
 		// Begin caching by replacing with ShimSource
 		if ($results) {
 			$this->_cached[$key] = $results;
@@ -245,7 +250,7 @@ class CacheableBehavior extends ModelBehavior {
 			$query = $this->_currentQuery;
 
 			// Pull from cache
-			if (!empty($this->_cached[$query['key']])) {
+			if (!empty($this->_cached[$query['key']]) && !$query['forceRefresh']) {
 				$model->useDbConfig = $this->_previousDbConfig;
 
 				$results = $this->_cached[$query['key']];
@@ -263,6 +268,9 @@ class CacheableBehavior extends ModelBehavior {
 			// Store empty result sets
 			} else if ($settings['storeEmpty']) {
 				$this->writeCache($model, $query['key'], $results, $query['expires']);
+			} else if ($query['forceRefresh']) {
+				// if forcing refresh, empty $results should just delete the cache if storeEmpty=false
+				$this->deleteCache($model, $query['key']);
 			}
 
 			$this->_isCaching = false;
@@ -525,6 +533,9 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return boolean
 	 */
 	public function deleteCache(Model $model, $keys) {
+		if(isset($this->_cached[$this->cacheKey($model, $keys)])) {
+			unset($this->_cached[$this->cacheKey($model, $keys)]);
+		}
 		return Cache::delete($this->cacheKey($model, $keys), $this->settings[$model->alias]['cacheConfig']);
 	}
 
