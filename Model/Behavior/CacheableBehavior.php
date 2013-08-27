@@ -177,7 +177,7 @@ class CacheableBehavior extends ModelBehavior {
 		// Grab the cache key and expiration
 		$key = $query['cache'];
 		$expires = isset($query['cacheExpires']) ? $query['cacheExpires'] : null;
-		$forceRefresh = isset($query['cacheForceRefresh']) ? $query['cacheForceRefresh'] : null;
+		$forceRefresh = isset($query['cacheForceRefresh']) ? $query['cacheForceRefresh'] : false;
 
 		if ($key === true) {
 			$key = array($model->alias, md5(json_encode($query)));
@@ -204,8 +204,8 @@ class CacheableBehavior extends ModelBehavior {
 
 		// Are results already cached?
 		$results = null;
-		
-		if(!$forceRefresh){
+
+		if (!$forceRefresh) {
 			if (!empty($this->_cached[$key])) {
 				$results = $this->_cached[$key];
 
@@ -214,7 +214,6 @@ class CacheableBehavior extends ModelBehavior {
 			}
 		}
 
-		
 		// Begin caching by replacing with ShimSource
 		if ($results) {
 			$this->_cached[$key] = $results;
@@ -268,8 +267,9 @@ class CacheableBehavior extends ModelBehavior {
 			// Store empty result sets
 			} else if ($settings['storeEmpty']) {
 				$this->writeCache($model, $query['key'], $results, $query['expires']);
+
+			// If forcing refresh, just delete the cache
 			} else if ($query['forceRefresh']) {
-				// if forcing refresh, empty $results should just delete the cache if storeEmpty=false
 				$this->deleteCache($model, $query['key']);
 			}
 
@@ -533,10 +533,13 @@ class CacheableBehavior extends ModelBehavior {
 	 * @return boolean
 	 */
 	public function deleteCache(Model $model, $keys) {
-		if(isset($this->_cached[$this->cacheKey($model, $keys)])) {
-			unset($this->_cached[$this->cacheKey($model, $keys)]);
+		$key = $this->cacheKey($model, $keys);
+
+		if (isset($this->_cached[$key])) {
+			unset($this->_cached[$key]);
 		}
-		return Cache::delete($this->cacheKey($model, $keys), $this->settings[$model->alias]['cacheConfig']);
+
+		return Cache::delete($key, $this->settings[$model->alias]['cacheConfig']);
 	}
 
 	/**
