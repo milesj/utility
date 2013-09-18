@@ -27,7 +27,7 @@ App::uses('ModelBehavior', 'Model');
  *				'status' => array(
  *					self::PENDING => 'PENDING',
  * 					self::ACTIVE => 'ACTIVE',
- * 					self::INACTIVE => 'INACTIVE
+ * 					self::INACTIVE => 'INACTIVE'
  *				)
  * 			);
  *		}
