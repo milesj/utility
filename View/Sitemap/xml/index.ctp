@@ -6,15 +6,15 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
 if ($sitemap) {
-	foreach ($sitemap as $item) {
-		echo '<url>';
+    foreach ($sitemap as $item) {
+        echo '<url>';
 
-		foreach ($item as $key => $value) {
-			echo sprintf('<%s>%s</%s>', $key, $value, $key);
-		}
+        foreach ($item as $key => $value) {
+            echo sprintf('<%s>%s</%s>', $key, $value, $key);
+        }
 
-		echo '</url>';
-	}
+        echo '</url>';
+    }
 }
 
 echo '</urlset>';

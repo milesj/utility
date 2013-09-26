@@ -5,7 +5,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 ## Requirements ##
 
 * PHP 5.3.0
-	* Multibyte
+    * Multibyte
 * CakePHP 2
 * Composer
 
