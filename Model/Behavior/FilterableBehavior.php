@@ -70,7 +70,7 @@ class FilterableBehavior extends ModelBehavior {
 				}
 
 				if (is_array($value)) {
-					if (($key === 'strip' || $key === 'paranoid') && empty($key['allowed'])) {
+					if (($key === 'strip' || $key === 'paranoid') && empty($value['allowed'])) {
 						$value = array('allowed' => $value);
 					}
 
