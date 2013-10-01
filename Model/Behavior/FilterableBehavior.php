@@ -6,6 +6,7 @@
  */
 
 App::uses('ModelBehavior', 'Model');
+App::uses('Sanitize', 'Utility');
 
 /**
  * A CakePHP Behavior that will run sanitization filters on specific fields during an insert or update.
