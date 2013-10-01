@@ -94,9 +94,10 @@ class ConvertableBehavior extends ModelBehavior {
      * Run the converter before an insert or update query.
      *
      * @param Model $model
+     * @param array $options
      * @return bool|mixed
      */
-    public function beforeSave(Model $model) {
+    public function beforeSave(Model $model, $options = array()) {
         $model->data = $this->convert($model, $model->data, self::TO);
 
         return true;

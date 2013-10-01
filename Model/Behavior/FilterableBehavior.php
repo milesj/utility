@@ -91,9 +91,10 @@ class FilterableBehavior extends ModelBehavior {
      * Run the filters before each save.
      *
      * @param Model $model
+     * @param array $options
      * @return bool|mixed
      */
-    public function beforeSave(Model $model) {
+    public function beforeSave(Model $model, $options = array()) {
         $settings = $this->settings[$model->alias];
 
         if ($model->data[$model->alias]) {

@@ -101,9 +101,10 @@ class SpamBlockerBehavior extends ModelBehavior {
      * Runs before a save and marks the content as spam or regular comment.
      *
      * @param Model $model
+     * @param array $options
      * @return bool
      */
-    public function beforeSave(Model $model) {
+    public function beforeSave(Model $model, $options = array()) {
         $settings = $this->settings[$model->alias];
         $columnMap = $settings['columnMap'];
         $statusMap = $settings['statusMap'];

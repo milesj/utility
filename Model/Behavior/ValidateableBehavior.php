@@ -156,9 +156,10 @@ class ValidateableBehavior extends ModelBehavior {
      * If validate is empty and a default set exists, apply the rules.
      *
      * @param Model $model
+     * @param array $options
      * @return bool
      */
-    public function beforeValidate(Model $model) {
+    public function beforeValidate(Model $model, $options = array()) {
         $default = $this->settings[$model->alias]['defaultSet'];
 
         if (empty($model->validate) && isset($model->validations[$default])) {

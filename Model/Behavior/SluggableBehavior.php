@@ -60,9 +60,10 @@ class SluggableBehavior extends ModelBehavior {
      * Generate a slug based on another field.
      *
      * @param Model $model
+     * @param array $options
      * @return bool
      */
-    public function beforeSave(Model $model) {
+    public function beforeSave(Model $model, $options = array()) {
         $settings = $this->settings[$model->alias];
 
         if (empty($model->data[$model->alias]) ||

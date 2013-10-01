@@ -240,7 +240,7 @@ class CacheableBehavior extends ModelBehavior {
      * @param bool $primary
      * @return mixed
      */
-    public function afterFind(Model $model, $results, $primary) {
+    public function afterFind(Model $model, $results, $primary = false) {
         $settings = $this->settings[$model->alias];
 
         if ($this->_isCaching) {
@@ -284,9 +284,10 @@ class CacheableBehavior extends ModelBehavior {
      *
      * @param Model $model
      * @param bool $created
+     * @param array $options
      * @return bool
      */
-    public function afterSave(Model $model, $created = true) {
+    public function afterSave(Model $model, $created, $options = array()) {
         $id = $model->id;
         $settings = $this->settings[$model->alias];
         $events = $settings['events'];
