@@ -5,5 +5,4 @@
  * @link        http://milesj.me/code/cakephp/utility
  */
 
-Router::connect('/sitemap.xml', array('plugin' => 'utility', 'controller' => 'sitemap', 'action' => 'index', 'ext' => 'xml'));
-Router::connect('/sitemap.json', array('plugin' => 'utility', 'controller' => 'sitemap', 'action' => 'index', 'ext' => 'json'));
+Router::connect('/sitemap', array('plugin' => 'utility', 'controller' => 'sitemap', 'action' => 'index'));

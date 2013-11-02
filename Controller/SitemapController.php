@@ -67,6 +67,11 @@ class SitemapController extends Controller {
             }
         }
 
+        // Disable direct linking
+        if (empty($this->request->params['ext'])) {
+            throw new NotFoundException();
+        }
+
         // Render view and don't use specific view engines
         $this->RequestHandler->respondAs($this->request->params['ext']);
 
