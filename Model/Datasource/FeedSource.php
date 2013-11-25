@@ -121,13 +121,18 @@ class FeedSource extends DataSource {
 
         // Loop the sources
         if (!empty($query['conditions'])) {
-            $cache = $query['feed']['cache'];
+            $cacheKey = $query['feed']['cache'];
+            $cache = (bool) $cacheKey;
+            $expires = $query['feed']['expires'];
+
+            // Change cache key
+            if ($cacheKey === true) {
+                $cacheKey = $model->name . '_' . md5(json_encode($query));
+            }
 
             // Detect cached first
             if ($cache) {
-                Cache::set('duration', $query['feed']['expires']);
-
-                $results = Cache::read($cache, 'feeds');
+                $results = Cache::read($cacheKey, 'feeds');
 
                 if ($results && is_array($results)) {
                     return $this->_truncate($results, $query['limit']);
@@ -138,19 +143,19 @@ class FeedSource extends DataSource {
 
             // Request and parse feeds
             foreach ($query['conditions'] as $source => $url) {
-                $cacheKey = $model->name . '_' . md5($url);
+                $urlCacheKey = $model->name . '_' . md5($url);
+                $urlData = Cache::read($urlCacheKey, 'feeds');
 
-                $this->_feeds[$url] = Cache::read($cacheKey, 'feeds');
+                if (!$urlData) {
+                    $urlData = $this->_process($http->get($url), $query, $source);
 
-                if (!$this->_feeds[$url]) {
-                    if ($response = $http->get($url)) {
-                        $this->_feeds[$url] = $this->_process($response, $query, $source);
-
-                        if ($cache) {
-                            Cache::write($cacheKey, $this->_feeds[$url], 'feeds');
-                        }
+                    if ($urlData && $cache) {
+                        Cache::set('duration', $expires);
+                        Cache::write($urlCacheKey, $urlData, 'feeds');
                     }
                 }
+
+                $this->_feeds[$url] = $urlData;
             }
 
             // Combine and sort feeds
@@ -172,8 +177,8 @@ class FeedSource extends DataSource {
                 }
 
                 if ($cache) {
-                    Cache::set(array('duration' => $query['feed']['expires']));
-                    Cache::write($cache, $results, 'feeds');
+                    Cache::set('duration', $expires);
+                    Cache::write($cacheKey, $results, 'feeds');
                 }
             }
 
@@ -219,6 +224,10 @@ class FeedSource extends DataSource {
      * @return bool
      */
     protected function _process(HttpSocketResponse $response, $query, $source) {
+        if (!$response->isOk()) {
+            return array();
+        }
+
         $feed = Converter::toArray($response->body());
         $clean = array();
 
