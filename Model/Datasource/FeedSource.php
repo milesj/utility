@@ -211,12 +211,12 @@ class FeedSource extends DataSource {
     /**
      * Processes the feed and rebuilds an array based on the feeds type (RSS, RDF, Atom).
      *
-     * @param HttpResponse $response
+     * @param HttpSocketResponse $response
      * @param array $query
      * @param string $source
      * @return bool
      */
-    protected function _process(HttpResponse $response, $query, $source) {
+    protected function _process(HttpSocketResponse $response, $query, $source) {
         $feed = Converter::toArray($response->body());
         $clean = array();
 
