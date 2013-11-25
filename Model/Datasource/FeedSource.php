@@ -146,7 +146,9 @@ class FeedSource extends DataSource {
                     if ($response = $http->get($url)) {
                         $this->_feeds[$url] = $this->_process($response, $query, $source);
 
-                        Cache::write($cacheKey, $this->_feeds[$url], 'feeds');
+                        if ($cache) {
+                            Cache::write($cacheKey, $this->_feeds[$url], 'feeds');
+                        }
                     }
                 }
             }
