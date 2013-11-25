@@ -18,6 +18,8 @@ Configure::write('Decoda.config', array(
     'escapeHtml' => true,
     'strictMode' => true,
     'maxNewlines' => 3,
+    'lineBreaks' => true,
+    'removeEmpty' => false,
     'paths' => array(),
     'whitelist' => array(),
     'blacklist' => array(),
