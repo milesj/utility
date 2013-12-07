@@ -348,15 +348,20 @@ class CacheableBehavior extends ModelBehavior {
      * @return mixed
      * @throws InvalidArgumentException
      */
-    public function cache(Model $model, $keys, Closure $callback, $expires = null) {
+    public function cache(Model $model, $keys, Closure $callback, $expires = null, $options = array()) {
+        $options = array_merge(array('forceRefresh' => false), $options);
         if (Configure::read('Cache.disable')) {
             return $callback($model, $keys, $expires);
         }
-
+		
         $key = $this->cacheKey($model, $keys);
-        $results = $this->readCache($model, $key);
-
-        if (!$results) {
+        
+        $results = null;
+        if(!$options['forceRefresh']){
+            $results = $this->readCache($model, $key);
+        }
+        
+        if ($results === null || $results === false) {
             $results = $callback($model, $keys, $expires);
 
             $this->writeCache($model, $key, $results, $expires);
