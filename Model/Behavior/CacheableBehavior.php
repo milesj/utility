@@ -213,7 +213,7 @@ class CacheableBehavior extends ModelBehavior {
         }
 
         // Begin caching by replacing with ShimSource
-        if ($results) {
+        if ($results !== null && $results !== false) {
             $this->_cached[$key] = $results;
             $this->_previousDbConfig = $model->useDbConfig;
 
