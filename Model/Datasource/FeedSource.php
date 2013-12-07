@@ -1,8 +1,8 @@
 <?php
 /**
- * @copyright	Copyright 2006-2013, Miles Johnson - http://milesj.me
- * @license		http://opensource.org/licenses/mit-license.php - Licensed under the MIT License
- * @link		http://milesj.me/code/cakephp/utility
+ * @copyright   2006-2013, Miles Johnson - http://milesj.me
+ * @license     https://github.com/milesj/utility/blob/master/license.md
+ * @link        http://milesj.me/code/cakephp/utility
  */
 
 App::uses('Folder', 'Utility');
@@ -16,329 +16,340 @@ use Titon\Utility\Converter;
  * Supports RSS, RDF and Atom feed types.
  *
  * {{{
- *		public $feed = array('datasource' => 'Utility.FeedSource');
+ *        public $feed = array('datasource' => 'Utility.FeedSource');
  * }}}
  */
 class FeedSource extends DataSource {
 
-	/**
-	 * The processed feeds in array format.
-	 *
-	 * @var array
-	 */
-	protected $_feeds = array();
+    /**
+     * The processed feeds in array format.
+     *
+     * @type array
+     */
+    protected $_feeds = array();
 
-	/**
-	 * Apply the cache settings.
-	 *
-	 * @param array $config
-	 */
-	public function __construct($config = array()) {
-		parent::__construct($config);
+    /**
+     * Apply the cache settings.
+     *
+     * @param array $config
+     */
+    public function __construct($config = array()) {
+        parent::__construct($config);
 
-		if (Cache::config('feeds') === false) {
-			$cachePath = CACHE . 'feeds' . DS;
+        if (Cache::config('feeds') === false) {
+            $cachePath = CACHE . 'feeds' . DS;
 
-			if (!file_exists($cachePath)) {
-				$folder = new Folder();
-				$folder->create($cachePath, 0777);
-			}
+            if (!file_exists($cachePath)) {
+                $folder = new Folder();
+                $folder->create($cachePath, 0777);
+            }
 
-			Cache::config('feeds', array(
-				'engine'	=> 'File',
-				'serialize'	=> true,
-				'prefix'	=> 'feed_',
-				'path'		=> $cachePath,
-				'duration'	=> '+1 day'
-			));
-		}
-	}
+            Cache::config('feeds', array(
+                'engine'    => 'File',
+                'serialize'    => true,
+                'prefix'    => 'feed_',
+                'path'        => $cachePath,
+                'duration'    => '+1 day'
+            ));
+        }
+    }
 
-	/**
-	 * Describe the supported feeds.
-	 *
-	 * @param Model|string $model
-	 * @return array
-	 */
-	public function describe($model) {
-		return $this->_feeds;
-	}
+    /**
+     * Describe the supported feeds.
+     *
+     * @param Model|string $model
+     * @return array
+     */
+    public function describe($model) {
+        return $this->_feeds;
+    }
 
-	/**
-	 * Return a list of aggregated feed URLs.
-	 *
-	 * @param array $data
-	 * @return array
-	 */
-	public function listSources($data = null) {
-		return array_keys($this->_feeds);
-	}
+    /**
+     * Return a list of aggregated feed URLs.
+     *
+     * @param array $data
+     * @return array
+     */
+    public function listSources($data = null) {
+        return array_keys($this->_feeds);
+    }
 
-	/**
-	 * Grab the feeds through an HTTP request and parse it into an array.
-	 *
-	 * @param Model $model
-	 * @param array $queryData
-	 * @param int $recursive
-	 * @return array
-	 */
-	public function read(Model $model, $queryData = array(), $recursive = null) {
-		$query = $queryData;
-		$defaults = array(
-			'root' => '',
-			'cache' => false,
-			'expires' => '+1 hour'
-		);
+    /**
+     * Grab the feeds through an HTTP request and parse it into an array.
+     *
+     * @param Model $model
+     * @param array $queryData
+     * @param int $recursive
+     * @return array
+     */
+    public function read(Model $model, $queryData = array(), $recursive = null) {
+        $query = $queryData;
+        $defaults = array(
+            'root' => '',
+            'cache' => false,
+            'expires' => '+1 hour'
+        );
 
-		if (!empty($query['feed'])) {
-			$query['feed'] = (array) $query['feed'] + $defaults;
-		} else {
-			$query['feed'] = $defaults;
-		}
+        if (!empty($query['feed'])) {
+            $query['feed'] = (array) $query['feed'] + $defaults;
+        } else {
+            $query['feed'] = $defaults;
+        }
 
-		// Get order sorting
-		$query['feed']['order'] = 'ASC';
-		$query['feed']['sort'] = 'date';
+        // Get order sorting
+        $query['feed']['order'] = 'ASC';
+        $query['feed']['sort'] = 'date';
 
-		if (isset($query['order'][0])) {
-			$order = $query['order'][0];
+        if (isset($query['order'][0])) {
+            $order = $query['order'][0];
 
-			if (is_array($order)) {
-				foreach ($order as $sort => $o) {
-					$query['feed']['sort'] = $sort;
-					$query['feed']['order'] = strtoupper($o);
-					break;
-				}
-			} else {
-				$query['feed']['order'] = strtoupper($order);
-			}
-		}
+            if (is_array($order)) {
+                foreach ($order as $sort => $o) {
+                    $query['feed']['sort'] = $sort;
+                    $query['feed']['order'] = strtoupper($o);
+                    break;
+                }
+            } else {
+                $query['feed']['order'] = strtoupper($order);
+            }
+        }
 
-		// Attempt to get the feed from the model
-		if (empty($query['conditions']) && !empty($model->feedUrls)) {
-			$query['conditions'] = (array) $model->feedUrls;
-		}
+        // Attempt to get the feed from the model
+        if (empty($query['conditions']) && !empty($model->feedUrls)) {
+            $query['conditions'] = (array) $model->feedUrls;
+        }
 
-		// Loop the sources
-		if (!empty($query['conditions'])) {
-			$cache = $query['feed']['cache'];
+        // Loop the sources
+        if (!empty($query['conditions'])) {
+            $cacheKey = $query['feed']['cache'];
+            $cache = (bool) $cacheKey;
+            $expires = $query['feed']['expires'];
 
-			// Detect cached first
-			if ($cache) {
-				Cache::set('duration', $query['feed']['expires']);
+            // Change cache key
+            if ($cacheKey === true) {
+                $cacheKey = $model->name . '_' . md5(json_encode($query));
+            }
 
-				$results = Cache::read($cache, 'feeds');
+            // Detect cached first
+            if ($cache) {
+                $results = Cache::read($cacheKey, 'feeds');
 
-				if ($results && is_array($results)) {
-					return $this->_truncate($results, $query['limit']);
-				}
-			}
+                if ($results && is_array($results)) {
+                    return $this->_truncate($results, $query['limit']);
+                }
+            }
 
-			$http = new HttpSocket();
+            $http = new HttpSocket();
 
-			// Request and parse feeds
-			foreach ($query['conditions'] as $source => $url) {
-				$cacheKey = $model->name . '_' . md5($url);
+            // Request and parse feeds
+            foreach ($query['conditions'] as $source => $url) {
+                $urlCacheKey = $model->name . '_' . md5($url);
+                $urlData = Cache::read($urlCacheKey, 'feeds');
 
-				$this->_feeds[$url] = Cache::read($cacheKey, 'feeds');
+                if (!$urlData) {
+                    $urlData = $this->_process($http->get($url), $query, $source);
 
-				if (!$this->_feeds[$url]) {
-					if ($response = $http->get($url)) {
-						$this->_feeds[$url] = $this->_process($response, $query, $source);
+                    if ($urlData && $cache) {
+                        Cache::set('duration', $expires);
+                        Cache::write($urlCacheKey, $urlData, 'feeds');
+                    }
+                }
 
-						Cache::write($cacheKey, $this->_feeds[$url], 'feeds');
-					}
-				}
-			}
+                $this->_feeds[$url] = $urlData;
+            }
 
-			// Combine and sort feeds
-			$results = array();
+            // Combine and sort feeds
+            $results = array();
 
-			if ($this->_feeds) {
-				foreach ($query['conditions'] as $source => $url) {
-					if ($this->_feeds[$url]) {
-						$results = $this->_feeds[$url] + $results;
-					}
-				}
+            if ($this->_feeds) {
+                foreach ($query['conditions'] as $source => $url) {
+                    if ($this->_feeds[$url]) {
+                        $results = $this->_feeds[$url] + $results;
+                    }
+                }
 
-				$results = array_filter($results);
+                $results = array_filter($results);
 
-				if ($query['feed']['order'] === 'ASC') {
-					krsort($results);
-				} else {
-					ksort($results);
-				}
+                if ($query['feed']['order'] === 'ASC') {
+                    krsort($results);
+                } else {
+                    ksort($results);
+                }
 
-				if ($cache) {
-					Cache::set(array('duration' => $query['feed']['expires']));
-					Cache::write($cache, $results, 'feeds');
-				}
-			}
+                if ($cache) {
+                    Cache::set('duration', $expires);
+                    Cache::write($cacheKey, $results, 'feeds');
+                }
+            }
 
-			return $this->_truncate($results, $query['limit']);
-		}
+            return $this->_truncate($results, $query['limit']);
+        }
 
-		return array();
-	}
+        return array();
+    }
 
-	/**
-	 * Extracts a certain value from a node.
-	 *
-	 * @param string $item
-	 * @param array $keys
-	 * @return string
-	 */
-	protected function _extract($item, $keys = array('value')) {
-		if (is_array($item)) {
-			if (isset($item[0])) {
-				return $this->_extract($item[0], $keys);
+    /**
+     * Extracts a certain value from a node.
+     *
+     * @param string $item
+     * @param array $keys
+     * @return string
+     */
+    protected function _extract($item, $keys = array('value')) {
+        if (is_array($item)) {
+            if (isset($item[0])) {
+                return $this->_extract($item[0], $keys);
 
-			} else {
-				foreach ($keys as $key) {
-					if (!empty($item[$key])) {
-						return trim($item[$key]);
+            } else {
+                foreach ($keys as $key) {
+                    if (!empty($item[$key])) {
+                        return trim($item[$key]);
 
-					} else if (isset($item['attributes'])) {
-						return $this->_extract($item['attributes'], $keys);
-					}
-				}
-			}
-		}
+                    } else if (isset($item['attributes'])) {
+                        return $this->_extract($item['attributes'], $keys);
+                    }
+                }
+            }
+        }
 
-		return trim($item);
-	}
+        return trim($item);
+    }
 
-	/**
-	 * Processes the feed and rebuilds an array based on the feeds type (RSS, RDF, Atom).
-	 *
-	 * @param HttpResponse $response
-	 * @param array $query
-	 * @param string $source
-	 * @return boolean
-	 */
-	protected function _process(HttpResponse $response, $query, $source) {
-		$feed = Converter::toArray($response->body());
-		$clean = array();
+    /**
+     * Processes the feed and rebuilds an array based on the feeds type (RSS, RDF, Atom).
+     *
+     * @param HttpSocketResponse $response
+     * @param array $query
+     * @param string $source
+     * @return bool
+     */
+    protected function _process(HttpSocketResponse $response, $query, $source) {
+        if (!$response->isOk()) {
+            return array();
+        }
 
-		if (!empty($query['root']) && !empty($feed[$query['feed']['root']])) {
-			$items = $feed[$query['feed']['root']];
-		} else {
-			// RSS
-			if (isset($feed['channel']) && isset($feed['channel']['item'])) {
-				$items = $feed['channel']['item'];
-			// RDF
-			} else if (isset($feed['item'])) {
-				$items = $feed['item'];
-			// Atom
-			} else if (isset($feed['entry'])) {
-				$items = $feed['entry'];
-			// XML
-			} else {
-				$items = $feed;
-			}
-		}
+        $feed = Converter::toArray($response->body());
+        $clean = array();
 
-		if (empty($items) || !is_array($items)) {
-			return $clean;
-		}
+        if (!empty($query['root']) && !empty($feed[$query['feed']['root']])) {
+            $items = $feed[$query['feed']['root']];
+        } else {
+            // RSS
+            if (isset($feed['channel']) && isset($feed['channel']['item'])) {
+                $items = $feed['channel']['item'];
+            // RDF
+            } else if (isset($feed['item'])) {
+                $items = $feed['item'];
+            // Atom
+            } else if (isset($feed['entry'])) {
+                $items = $feed['entry'];
+            // XML
+            } else {
+                $items = $feed;
+            }
+        }
 
-		// Gather elements
-		$elements = array(
-			'title' => array('title'),
-			'guid' => array('guid', 'id'),
-			'date' => array('date', 'pubDate', 'published', 'updated'),
-			'link' => array('link', 'origLink'),
-			'image' => array('image', 'thumbnail'),
-			'author' => array('author', 'writer', 'editor', 'user'),
-			'source' => array('source'),
-			'description' => array('description', 'desc', 'summary', 'content', 'text')
-		);
+        if (empty($items) || !is_array($items)) {
+            return $clean;
+        }
 
-		if (is_array($query['fields'])) {
-			$elements = array_merge_recursive($elements, $query['fields']);
-		}
+        // Gather elements
+        $elements = array(
+            'title' => array('title'),
+            'guid' => array('guid', 'id'),
+            'date' => array('date', 'pubDate', 'published', 'updated'),
+            'link' => array('link', 'origLink'),
+            'image' => array('image', 'thumbnail'),
+            'author' => array('author', 'writer', 'editor', 'user'),
+            'source' => array('source'),
+            'description' => array('description', 'desc', 'summary', 'content', 'text')
+        );
 
-		// Loop the feed
-		foreach ($items as $item) {
-			$data = array();
+        if (is_array($query['fields'])) {
+            $elements = array_merge_recursive($elements, $query['fields']);
+        }
 
-			foreach ($elements as $element => $keys) {
-				if (isset($keys['attributes'])) {
-					$attributes = $keys['attributes'];
-					unset($keys['attributes']);
-				} else {
-					$attributes = array('value', 'href', 'src', 'name', 'label');
-				}
+        // Loop the feed
+        foreach ($items as $item) {
+            $data = array();
 
-				if (isset($keys['keys'])) {
-					$keys = $keys['keys'];
-				}
+            foreach ($elements as $element => $keys) {
+                if (isset($keys['attributes'])) {
+                    $attributes = $keys['attributes'];
+                    unset($keys['attributes']);
+                } else {
+                    $attributes = array('value', 'href', 'src', 'name', 'label');
+                }
 
-				foreach ($keys as $key) {
-					if (isset($item[$key]) && empty($data[$element])) {
-						if ($value = $this->_extract($item[$key], $attributes)) {
-							$data[$element] = $value;
-							break;
-						}
-					}
-				}
-			}
+                if (isset($keys['keys'])) {
+                    $keys = $keys['keys'];
+                }
 
-			if (empty($data['link'])) {
-				trigger_error(sprintf('Feed %s does not have a valid link element', $source), E_USER_NOTICE);
-				continue;
-			}
+                foreach ($keys as $key) {
+                    if (isset($item[$key]) && empty($data[$element])) {
+                        if ($value = $this->_extract($item[$key], $attributes)) {
+                            $data[$element] = $value;
+                            break;
+                        }
+                    }
+                }
+            }
 
-			if (empty($data['source']) && $source) {
-				$data['source'] = (string) $source;
-			}
+            if (empty($data['link'])) {
+                trigger_error(sprintf('Feed %s does not have a valid link element', $source), E_USER_NOTICE);
+                continue;
+            }
 
-			// Determine how to sort
-			$sortBy = $query['feed']['sort'];
+            if (empty($data['source']) && $source) {
+                $data['source'] = (string) $source;
+            }
 
-			if (isset($data[$sortBy])) {
-				$sort = $data[$sortBy];
-			} else if (isset($data['date'])) {
-				$sort = $data['date'];
-			} else {
-				$sort = null;
-			}
+            // Determine how to sort
+            $sortBy = $query['feed']['sort'];
 
-			if ($sortBy === 'date' && $sort) {
-				$sort = strtotime($sort);
-			} else if (!$sort) {
-				$sort = microtime();
-			}
+            if (isset($data[$sortBy])) {
+                $sort = $data[$sortBy];
+            } else if (isset($data['date'])) {
+                $sort = $data['date'];
+            } else {
+                $sort = null;
+            }
 
-			if ($data) {
-				$clean[$sort] = $data;
-			}
-		}
+            if ($sortBy === 'date' && $sort) {
+                $sort = strtotime($sort);
+            } else if (!$sort) {
+                $sort = microtime();
+            }
 
-		return $clean;
-	}
+            if ($data) {
+                $clean[$sort] = $data;
+            }
+        }
 
-	/**
-	 * Truncates the feed to a certain length.
-	 *
-	 * @param array $feed
-	 * @param int $count
-	 * @return array
-	 */
-	protected function _truncate($feed, $count = null) {
-		if (!$feed) {
-			return $feed;
-		}
+        return $clean;
+    }
 
-		if ($count === null) {
-			$count = 20;
-		}
+    /**
+     * Truncates the feed to a certain length.
+     *
+     * @param array $feed
+     * @param int $count
+     * @return array
+     */
+    protected function _truncate($feed, $count = null) {
+        if (!$feed) {
+            return $feed;
+        }
 
-		if ($count && count($feed) > $count) {
-			$feed = array_slice($feed, 0, $count);
-		}
+        if ($count === null) {
+            $count = 20;
+        }
 
-		return array_values($feed);
-	}
+        if ($count && count($feed) > $count) {
+            $feed = array_slice($feed, 0, $count);
+        }
+
+        return array_values($feed);
+    }
 
 }
