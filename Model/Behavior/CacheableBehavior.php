@@ -320,7 +320,7 @@ class CacheableBehavior extends ModelBehavior {
             $this->deleteCache($model, array($model->alias . '::' . $getCount));
         }
 
-        return $created;
+        return true;
     }
 
     /**
