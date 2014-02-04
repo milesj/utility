@@ -37,4 +37,11 @@ class ShimSource extends DataSource {
         return $data;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function read(Model $model, $queryData = array(), $recursive = null) {
+        return array();
+    }
+
 }
