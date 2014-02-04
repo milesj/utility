@@ -127,7 +127,7 @@ class SluggableBehavior extends ModelBehavior {
         $settings = $this->settings[$model->alias];
         $conditions = array(
             array($settings['slug'] => $string),
-            array($settings['slug'] . ' LIKE' => $string . '-%')
+            array($settings['slug'] . ' LIKE' => $string . $settings['separator'] . '%')
         );
 
         foreach ($conditions as $i => $where) {
@@ -143,11 +143,12 @@ class SluggableBehavior extends ModelBehavior {
                 'contain' => false
             ));
 
-            if ($count == 0) {
-                return $string;
-
-            } else if ($i == 0) {
-                continue;
+            if ($i == 0) {
+                if ($count == 0) {
+                    return $string;
+                } else {
+                    continue;
+                }
             }
 
             $string .= $settings['separator'] . $count;
