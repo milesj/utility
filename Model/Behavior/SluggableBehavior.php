@@ -125,19 +125,31 @@ class SluggableBehavior extends ModelBehavior {
      */
     protected function _makeUnique(Model $model, $string) {
         $settings = $this->settings[$model->alias];
-        $conditions = array($settings['slug'] . ' LIKE' => $string . '%') + $settings['scope'];
+        $conditions = array(
+            array($settings['slug'] => $string),
+            array($settings['slug'] . ' LIKE' => $string . '-%')
+        );
 
-        if ($model->id) {
-            $conditions[$model->primaryKey . ' !='] = $model->id;
-        }
+        foreach ($conditions as $i => $where) {
+            $where = $where + $settings['scope'];
 
-        $count = $model->find('count', array(
-            'conditions' => $conditions,
-            'recursive' => -1,
-            'contain' => false
-        ));
+            if ($model->id) {
+                $where[$model->primaryKey . ' !='] = $model->id;
+            }
 
-        if ($count) {
+            $count = $model->find('count', array(
+                'conditions' => $where,
+                'recursive' => -1,
+                'contain' => false
+            ));
+
+            if ($count == 0) {
+                return $string;
+
+            } else if ($i == 0) {
+                continue;
+            }
+
             $string .= $settings['separator'] . $count;
         }
 
