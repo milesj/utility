@@ -1,4 +1,4 @@
-# Utility v1.6.5 #
+# Utility v1.6.6 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
