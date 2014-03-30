@@ -117,6 +117,21 @@ class SluggableBehavior extends ModelBehavior {
     }
 
     /**
+     * Helper function to check if a slug exists.
+     *
+     * @param Model $model
+     * @param string $slug
+     * @return bool
+     */
+    public function slugExists(Model $model, $slug) {
+        return (bool) $model->find('count', array(
+            'conditions' => array($this->settings[$model->alias]['slug'] => $slug),
+            'recursive' => -1,
+            'contain' => false
+        ));
+    }
+
+    /**
      * Validate the slug is unique by querying for other slugs.
      *
      * @param Model $model
