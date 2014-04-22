@@ -201,20 +201,15 @@ class CacheableBehavior extends ModelBehavior {
         );
 
         // Are results already cached?
-        $results = null;
-
-        if (!$forceRefresh) {
-            if (!empty($this->_cached[$key])) {
-                $results = $this->_cached[$key];
-
-            } else if ($fromCache = $this->readCache($model, $key)) {
-                $results = $fromCache;
-            }
+        if ($forceRefresh) {
+            $results = false;
+            $this->deleteCache($model, $key);
+        } else {
+            $results = $this->readCache($model, $key);
         }
 
         // Begin caching by replacing with ShimSource
-        if ($results !== null && $results !== false) {
-            $this->_cached[$key] = $results;
+        if ($results !== false) {
             $this->_previousDbConfig = $model->useDbConfig;
 
             // Create DataSource config if it doesn't exist
@@ -241,15 +236,13 @@ class CacheableBehavior extends ModelBehavior {
      * @return mixed
      */
     public function afterFind(Model $model, $results, $primary = false) {
-        $settings = $this->settings[$model->alias];
-
         if ($this->_isCaching) {
+            $settings = $this->settings[$model->alias];
             $query = $this->_currentQuery;
 
-            // Pull from cache
-            if (!empty($this->_cached[$query['key']]) && !$query['forceRefresh']) {
+            // Pull from cache if this was decided in beforeFind
+            if ($model->useDbConfig == $this->settings[$model->alias]['dbConfig']) {
                 $model->useDbConfig = $this->_previousDbConfig;
-
                 $results = $this->_cached[$query['key']];
 
             // Write the new results if it has data
@@ -266,9 +259,6 @@ class CacheableBehavior extends ModelBehavior {
             } else if ($settings['storeEmpty']) {
                 $this->writeCache($model, $query['key'], $results, $query['expires']);
 
-            // If forcing refresh, just delete the cache
-            } else if ($query['forceRefresh']) {
-                $this->deleteCache($model, $query['key']);
             }
 
             $this->_isCaching = false;
@@ -513,7 +503,14 @@ class CacheableBehavior extends ModelBehavior {
      * @return mixed
      */
     public function readCache(Model $model, $keys) {
-        return Cache::read($this->cacheKey($model, $keys), $this->settings[$model->alias]['cacheConfig']);
+        $key = $this->cacheKey($model, $keys);
+        if (isset($this->_cached[$key])) {
+            $results = $this->_cached[$key];
+        } else {
+            $results = Cache::read($key, $this->settings[$model->alias]['cacheConfig']);
+            $this->_cached[$key] = $results;
+        }
+        return $results;
     }
 
     /**
@@ -526,9 +523,10 @@ class CacheableBehavior extends ModelBehavior {
      * @return bool
      */
     public function writeCache(Model $model, $keys, $value, $expires = null) {
+        $key = $this->cacheKey($model, $keys);
         Cache::set('duration', $this->getExpiration($model, $expires), $this->settings[$model->alias]['cacheConfig']);
-
-        return Cache::write($this->cacheKey($model, $keys), $value, $this->settings[$model->alias]['cacheConfig']);
+        $this->_cached[$key] = $value;
+        return Cache::write($key, $value, $this->settings[$model->alias]['cacheConfig']);
     }
 
     /**
@@ -540,11 +538,7 @@ class CacheableBehavior extends ModelBehavior {
      */
     public function deleteCache(Model $model, $keys) {
         $key = $this->cacheKey($model, $keys);
-
-        if (isset($this->_cached[$key])) {
-            unset($this->_cached[$key]);
-        }
-
+        unset($this->_cached[$key]);
         return Cache::delete($key, $this->settings[$model->alias]['cacheConfig']);
     }
 
