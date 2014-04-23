@@ -241,8 +241,9 @@ class CacheableBehavior extends ModelBehavior {
             $query = $this->_currentQuery;
 
             // Pull from cache if this was decided in beforeFind
-            if ($model->useDbConfig == $this->settings[$model->alias]['dbConfig']) {
+            if ($model->useDbConfig === $this->settings[$model->alias]['dbConfig']) {
                 $model->useDbConfig = $this->_previousDbConfig;
+
                 $results = $this->_cached[$query['key']];
 
             // Write the new results if it has data
@@ -504,12 +505,13 @@ class CacheableBehavior extends ModelBehavior {
      */
     public function readCache(Model $model, $keys) {
         $key = $this->cacheKey($model, $keys);
+
         if (isset($this->_cached[$key])) {
             $results = $this->_cached[$key];
         } else {
-            $results = Cache::read($key, $this->settings[$model->alias]['cacheConfig']);
-            $this->_cached[$key] = $results;
+            $this->_cached[$key] = $results = Cache::read($key, $this->settings[$model->alias]['cacheConfig']);
         }
+
         return $results;
     }
 
@@ -524,8 +526,11 @@ class CacheableBehavior extends ModelBehavior {
      */
     public function writeCache(Model $model, $keys, $value, $expires = null) {
         $key = $this->cacheKey($model, $keys);
+
         Cache::set('duration', $this->getExpiration($model, $expires), $this->settings[$model->alias]['cacheConfig']);
+
         $this->_cached[$key] = $value;
+
         return Cache::write($key, $value, $this->settings[$model->alias]['cacheConfig']);
     }
 
@@ -538,7 +543,9 @@ class CacheableBehavior extends ModelBehavior {
      */
     public function deleteCache(Model $model, $keys) {
         $key = $this->cacheKey($model, $keys);
+
         unset($this->_cached[$key]);
+
         return Cache::delete($key, $this->settings[$model->alias]['cacheConfig']);
     }
 
