@@ -174,7 +174,7 @@ class AutoLoginComponent extends Component {
             }
 
             if ($this->redirect) {
-                $controller->redirect($controller->referer($this->Auth->redirect()), 301);
+                $controller->redirect($controller->referer($this->Auth->redirect()), 302);
             }
         } else {
             $this->debug('loginFail', $this->Cookie, $this->Auth->user());
