@@ -176,7 +176,7 @@ abstract class BaseInstallShell extends AppShell {
             $missing = array();
 
             foreach ($this->requiredTables as $table) {
-                if (!in_array($table, $tables)) {
+                if (!in_array($this->db->config['prefix'] . $table, $tables)) {
                     $missing[] = $table;
                 }
             }
