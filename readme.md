@@ -12,7 +12,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 ## Dependencies ##
 
 * `Decoda` - https://github.com/milesj/decoda (DecodaHelper)
-* `Titon\Utility` - https://github.com/titon/utility (AjaxHandlerComponent, FeedSource)
+* `TypeConverter` - https://github.com/milesj/type-converter (AjaxHandlerComponent, FeedSource)
 
 ## Libraries ##
 

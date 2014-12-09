@@ -21,8 +21,8 @@
         "composer/installers": "*"
     },
     "suggest": {
-        "mjohnson/decoda": "Enable Decoda for BBCode parsing in the DecodaHelper",
-        "titon/utility": "Enable Titon to parse feeds in FeedSource and process AJAX in the AjaxHandlerComponent"
+        "mjohnson/decoda": "Enable for BBCode parsing in the DecodaHelper",
+        "mjohnson/type-converter": "Enable to parse feeds in FeedSource and process AJAX in the AjaxHandlerComponent"
     },
     "support": {
         "source": "https://github.com/milesj/utility"

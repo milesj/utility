@@ -7,7 +7,7 @@
 
 App::uses('Component', 'Controller');
 
-use Titon\Utility\Converter;
+use mjohnson\utility\TypeConverter;
 
 /**
  * A CakePHP Component that will automatically handle and render AJAX calls and apply the appropriate returned format and headers.
@@ -183,10 +183,10 @@ class AjaxHandlerComponent extends Component {
 
         switch (strtolower($type)) {
             case 'json':
-                $format = Converter::toJson($response);
+                $format = TypeConverter::toJson($response);
             break;
             case 'xml':
-                $format = Converter::toXml($response);
+                $format = TypeConverter::toXml($response);
             break;
             case 'html';
             case 'text':

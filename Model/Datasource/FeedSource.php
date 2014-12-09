@@ -9,7 +9,7 @@ App::uses('Folder', 'Utility');
 App::uses('DataSource', 'Model/Datasource');
 App::uses('HttpSocket', 'Network/Http');
 
-use Titon\Utility\Converter;
+use mjohnson\utility\TypeConverter;
 
 /**
  * A DataSource that can read and parse web feeds and aggregate them into a single result.
@@ -228,7 +228,7 @@ class FeedSource extends DataSource {
             return array();
         }
 
-        $feed = Converter::toArray($response->body());
+        $feed = TypeConverter::toArray($response->body());
         $clean = array();
 
         if (!empty($query['root']) && !empty($feed[$query['feed']['root']])) {
