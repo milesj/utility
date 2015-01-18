@@ -18,11 +18,11 @@
     "require": {
         "php": ">=5.3.0",
         "ext-mbstring": "*",
-        "composer/installers": "*"
+        "composer/installers": "*",
+        "mjohnson/type-converter": "*"
     },
     "suggest": {
-        "mjohnson/decoda": "Enable for BBCode parsing in the DecodaHelper",
-        "mjohnson/type-converter": "Enable to parse feeds in FeedSource and process AJAX in the AjaxHandlerComponent"
+        "mjohnson/decoda": "Enable for BBCode parsing in the DecodaHelper"
     },
     "support": {
         "source": "https://github.com/milesj/utility"
